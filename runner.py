@@ -27,9 +27,13 @@ def parse_args():
     Parse provided arguments from the command line.
     """
     arg_parser = argparse.ArgumentParser(
-        description: "Argument parsing for accessing andrunning my deep "\
+        description="Argument parsing for accessing andrunning my deep "\
             "reinforcement learning projects")
-    args = []
+
+    # command-line arguments
+    arg_parser.add_argument('-c', '--config', dest='config_file',
+                            type=str, default=DEFAULT_CONFIG)
+    args = vars(arg_parser.parse_args())
 
     return args
 
@@ -43,15 +47,16 @@ def load_config(path):
     with open(path, 'r') as config:
         config_data = yaml.safe_load(config)
 
-    return config_data['env_params'], config_data['model_params']
+    return config_data
 
 
 def main(config_file=DEFAULT_CONFIG):
     """
     Main runner for the code CLI.
     """
-    env_params, model_params = load_config(config_file)
-    navigation_prob = NavigationMain(**env_params, model_params)
+    config_data = load_config(config_file)
+    model_params = config_data.pop('model_params')
+    navigation_prob = NavigationMain(**config_data, model_params=model_params)
     navigation_prob.run_interaction()
 
 

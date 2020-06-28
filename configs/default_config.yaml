@@ -1,7 +1,7 @@
 # general parameters
-file_path: 'envs/Banana_Linux_{VIS}/Banana.x86_64'
-
-
+file_path: 'envs/Banana_Linux/Banana.x86_64'
 
 # model parameters
-
+model_params:
+  alg: 'random'
+  frame_time: 0.075

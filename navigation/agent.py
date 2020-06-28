@@ -12,8 +12,10 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 import os
 import argparse
 
+import numpy as np
 
-class MainModel:
+
+class MainAgent:
     """
     This model contains my code for the agent to learn and be able to navigate
     through the pertinent problem.
