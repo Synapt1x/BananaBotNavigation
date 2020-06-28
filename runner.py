@@ -11,7 +11,15 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 
 
 import os
+import yaml
 import argparse
+
+from navigation.navigation_main import NavigationMain
+
+
+# global constants
+CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_CONFIG = os.path.join(CUR_DIR, 'configs', 'default_config.yaml')
 
 
 def parse_args():
@@ -26,12 +34,25 @@ def parse_args():
     return args
 
 
-def main():
+def load_config(path):
+    """
+    Load the configuration file that will specify the properties and parameters
+    that may change in the general problem environment and/or the underlying RL
+    agent/algorithm.
+    """
+    with open(path, 'r') as config:
+        config_data = yaml.safe_load(config)
+
+    return config_data['env_params'], config_data['model_params']
+
+
+def main(config_file=DEFAULT_CONFIG):
     """
     Main runner for the code CLI.
     """
-    pass
-
+    env_params, model_params = load_config(config_file)
+    navigation_prob = NavigationMain(**env_params, model_params)
+    navigation_prob.run_interaction()
 
 
 if __name__ == '__main__':
