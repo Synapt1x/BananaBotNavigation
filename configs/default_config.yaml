@@ -4,4 +4,4 @@ file_path: 'envs/Banana_Linux_NoVis/Banana.x86_64'
 # model parameters
 model_params:
   alg: 'random'
-  frame_time: 0.075
+  frame_time: 0.0
