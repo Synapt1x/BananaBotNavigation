@@ -65,5 +65,5 @@ class MainAgent:
         if 'dqn' not in self.alg:
             new_value = self.compute_update(state, action, next_state,
                                             reward, done)
-            self.Q.update_value(state, action, new_value)
+            self.q.update_value(state, action, new_value)
 
