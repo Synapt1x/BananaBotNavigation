@@ -34,7 +34,7 @@ class Q:
         elif self.alg == 'q':
             return np.random.rand(shape=(self.state_size, self.action_size))
 
-    def s_a_value(self, state, action):
+    def get_value(self, state, action):
         """
         """
         if self.alg == 'q':

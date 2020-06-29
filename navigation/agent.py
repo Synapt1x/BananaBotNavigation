@@ -27,9 +27,12 @@ class MainAgent:
 
         np.random.seed(seed)
 
+        # extract hyperparameters for the general algorithm
         self.epsilon = kwargs.get('epsilon', 0.9)
         self.epslion_decay = kwargs.get('epsilon_decay', 0.999)
         self.epsilon_min = kwargs.get('epsilon_min', 0.1)
+        self.gamma = kwargs.get('gamma', 0.9)
+        self.alpha = kwargs.get('alpha', 0.1)
 
         self.q = Q(alg, self.state_size, self.action_size)
 
@@ -57,7 +60,12 @@ class MainAgent:
         Compute the updated value for the Q-function estimate based on the
         experience tuple.
         """
-        return reward
+        curr_val = self.q.get_value(state, action)
+        next_val = self.q.get_value(next_state, self.get_action(next_state))
+
+        if self.alg == 'q':
+            return curr_val + self.alpha * (
+                reward + self.gamma * next_val - curr_val)
 
     def learn(self, state, action, next_state, reward, done):
         """
