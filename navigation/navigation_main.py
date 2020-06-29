@@ -25,8 +25,12 @@ class NavigationMain:
     models.
     """
 
-    def __init__(self, file_path, model_params, frame_time=0.075):
+    def __init__(self, file_path, model_params, frame_time=0.075,
+                 print_after_iterations=100, max_iterations=10000):
         self.frame_time = frame_time
+        self.print_after_iterations = print_after_iterations
+        self.max_iterations = max_iterations
+
         self.env, self.brain_name, self.brain = self._init_env(file_path)
         self.agent = self._init_agent(model_params)
 
@@ -40,6 +44,13 @@ class NavigationMain:
         d = curr_env_info.local_done[0]
 
         return s, r, d
+
+    @staticmethod
+    def _print_progress(iteration, score):
+        """
+        Helper method for printing out the state of the game after completion.
+        """
+        print(f"Current Score on iteration {iteration}: {score}")
 
     @staticmethod
     def _print_on_close(score):
@@ -75,6 +86,7 @@ class NavigationMain:
         Run interaction in the Unity-ML Navigation environment.
         """
         score = 0
+        iteration = 0
         try:
             # initiate interaction and learning in environment
             env_info = self.env.reset(train_mode=train_mode)[self.brain_name]
@@ -92,6 +104,10 @@ class NavigationMain:
                 if done:
                     break
                 time.sleep(self.frame_time)
+
+                iteration += 1
+                if (iteration % self.print_after_iterations) == 0:
+                    self._print_progress(iteration, score)
         except KeyboardInterrupt:
             print("Exiting game gracefully...")
         finally:

@@ -1,2 +1,7 @@
 # data files
 models
+envs
+
+*.pyc
+__pycache__
+unity-environment.log
