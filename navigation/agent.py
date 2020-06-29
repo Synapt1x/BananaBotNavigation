@@ -52,7 +52,18 @@ class MainAgent:
                 return self._select_random_a()
             return self.q.get_action(state)
 
-    def learn(self):
+    def compute_update(self, state, action, next_state, reward, done):
+        """
+        Compute the updated value for the Q-function estimate based on the
+        experience tuple.
+        """
+        return reward
+
+    def learn(self, state, action, next_state, reward, done):
         """
         """
-        pass
+        if 'dqn' not in self.alg:
+            new_value = self.compute_update(state, action, next_state,
+                                            reward, done)
+            self.Q.update_value(state, action, new_value)
+
