@@ -49,7 +49,7 @@ class MainAgent:
         """
         if self.alg == 'random':
             return self._select_random_a()
-        elif self.alg == 'q':
+        else:
             rand_val = np.random.rand()
             if rand_val < self.epsilon:
                 return self._select_random_a()
@@ -63,7 +63,7 @@ class MainAgent:
         curr_val = self.q.get_value(state, action)
         next_val = self.q.get_value(next_state, self.get_action(next_state))
 
-        if self.alg == 'q':
+        if self.alg in {'q', 'dqn'}:
             return curr_val + self.alpha * (
                 reward + self.gamma * next_val - curr_val)
 

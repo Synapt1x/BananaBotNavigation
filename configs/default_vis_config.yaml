@@ -3,5 +3,5 @@ file_path: 'envs/Banana_Linux/Banana.x86_64'
 
 # model parameters
 model_params:
-  alg: 'random'
+  alg: 'dqn'
   frame_time: 0.02

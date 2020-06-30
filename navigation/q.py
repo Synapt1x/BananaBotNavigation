@@ -33,22 +33,33 @@ class Q:
             return None
         elif self.alg == 'q':
             return np.random.rand(shape=(self.state_size, self.action_size))
+        elif self.alg == 'dqn':
+            #TODO:
+            return 0
 
     def get_value(self, state, action):
         """
         """
         if self.alg == 'q':
-            return q[state, action]
+            return self.q[state, action]
+        elif self.alg == 'dqn':
+            #TODO:
+            return 0.0
 
     def get_action(self, state):
         """
         """
         if self.alg == 'q':
-            return np.argmax(q[state])
+            return np.argmax(self.q[state])
+        elif self.alg == 'dqn':
+            #TODO:
+            return 0
 
     def update_value(self, state, action, new_val):
         """
         """
         if self.alg == 'q':
             self.q[state, action] = new_val
-
+        elif self.alg == 'dqn':
+            #TODO:
+            pass
