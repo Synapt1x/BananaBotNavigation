@@ -10,6 +10,7 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 
 
 import numpy as np
+from navigation.torch_models.simple_linear import LinearModel
 
 
 class Q:
@@ -34,8 +35,8 @@ class Q:
         elif self.alg == 'q':
             return np.random.rand(shape=(self.state_size, self.action_size))
         elif self.alg == 'dqn':
-            #TODO:
-            return 0
+            #TODO: pass parameters to architecture
+            return self.q = LinearModel()
 
     def get_value(self, state, action):
         """
@@ -43,8 +44,8 @@ class Q:
         if self.alg == 'q':
             return self.q[state, action]
         elif self.alg == 'dqn':
-            #TODO:
-            return 0.0
+            #TODO: need to use .gather to extract for batches
+            return self.q(state).detach()[action]
 
     def get_action(self, state):
         """
@@ -52,14 +53,11 @@ class Q:
         if self.alg == 'q':
             return np.argmax(self.q[state])
         elif self.alg == 'dqn':
-            #TODO:
-            return 0
+            #TODO: ensure this works for batches
+            return self.q(state).detach().max(1)
 
-    def update_value(self, state, action, new_val):
+    def update_q_table(self, state, action, new_val):
         """
         """
         if self.alg == 'q':
             self.q[state, action] = new_val
-        elif self.alg == 'dqn':
-            #TODO:
-            pass

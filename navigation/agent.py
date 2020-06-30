@@ -10,6 +10,8 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 
 
 import numpy as np
+import torch.optim as optim
+
 from navigation.q import Q
 
 
@@ -33,8 +35,17 @@ class MainAgent:
         self.epsilon_min = kwargs.get('epsilon_min', 0.1)
         self.gamma = kwargs.get('gamma', 0.9)
         self.alpha = kwargs.get('alpha', 0.1)
+        self.t_freq = kwargs.get('t_freq', 10)
 
         self.q = Q(alg, self.state_size, self.action_size)
+        if 'dqn' in self.alg.lower():
+            self.target_q = Q(alg, self.state_size, self.action_size)
+            self.opimizer = optim.Adam(self.q.parameters(), lr=self.alpha)
+            #TODO: implement replay buffer
+            #self.memory = ReplayBuffer(self.action_size, self.buffer_size,
+                                       #self.batch_size, seed=seed)
+            self.memory = None
+            self.t = 0
 
     def _select_random_a(self):
         """
@@ -60,18 +71,25 @@ class MainAgent:
         Compute the updated value for the Q-function estimate based on the
         experience tuple.
         """
-        curr_val = self.q.get_value(state, action)
-        next_val = self.q.get_value(next_state, self.get_action(next_state))
+        if self.alg.lower() == 'q':
+            curr_val = self.q.get_value(state, action)
+            next_val = self.q.get_value(next_state, self.get_action(next_state))
 
-        if self.alg in {'q', 'dqn'}:
             return curr_val + self.alpha * (
                 reward + self.gamma * next_val - curr_val)
+        else:
+            #TODO: compute update for DQN
+            pass
 
     def learn(self, state, action, next_state, reward, done):
         """
         """
-        if 'dqn' not in self.alg:
+        if 'dqn' not in self.alg.lower():
             new_value = self.compute_update(state, action, next_state,
                                             reward, done)
             self.q.update_value(state, action, new_value)
-
+        else:
+            self.memory.store_tuple(state, action, next_state, reward, done)
+            if (self.t % self.t_freq) == 0 and not self.memory.empty:
+                exp_tuples = self.memory.sample(self.batch_size)
+                #TODO: finish passing to learn from tuple
