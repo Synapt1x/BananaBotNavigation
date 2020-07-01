@@ -121,6 +121,9 @@ class NavigationMain:
             if (iteration % self.print_after_iterations) == 0:
                 self._print_progress(iteration, score_avg)
 
+            # update state of agent
+            self.agent.step()
+
         self._print_on_close(score)
 
     def train_agent(self, train_mode=True):

@@ -34,7 +34,7 @@ class MainAgent:
 
         # extract hyperparameters for the general algorithm
         self.epsilon = kwargs.get('epsilon', 0.9)
-        self.epslion_decay = kwargs.get('epsilon_decay', 0.999)
+        self.epsilon_decay = kwargs.get('epsilon_decay', 0.999)
         self.epsilon_min = kwargs.get('epsilon_min', 0.1)
         self.gamma = kwargs.get('gamma', 0.9)
         self.alpha = kwargs.get('alpha', 0.1)
@@ -107,7 +107,6 @@ class MainAgent:
 
             return Variable(loss, requires_grad=True)
 
-
     def learn(self, state, action, next_state, reward, done):
         """
         """
@@ -134,3 +133,10 @@ class MainAgent:
                 self._update_target()
                 
             self.t += 1
+
+    def step(self):
+        """
+        Update state of the agent and take a step through the learning process
+        to reflect experiences have been acquired and/or learned from.
+        """
+        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)

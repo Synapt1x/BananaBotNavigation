@@ -25,6 +25,10 @@ class Q:
         self.state_size = state_size
         self.action_size = action_size
 
+        # initalize device; use GPU if available
+        self.device = torch.device(
+            "cuda:0" if torch.cuda.is_available() else "cpu")
+
         self.q = self._init_q()
 
     def _init_q(self):
@@ -36,9 +40,8 @@ class Q:
         elif self.alg == 'q':
             return np.random.rand(shape=(self.state_size, self.action_size))
         elif self.alg == 'dqn':
-            #TODO: pass parameters to architecture
             return LinearModel(state_size=self.state_size,
-                               action_size=self.action_size)
+                               action_size=self.action_size).to(self.device)
 
     def get_value(self, state, action=None):
         """

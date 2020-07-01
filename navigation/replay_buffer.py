@@ -28,8 +28,9 @@ class ReplayBuffer:
         self.seed = seed
         np.random.seed(seed)  # seed for reproducibility
 
-        #TODO: Add torch device
-        #self.device = device
+        # initalize device; use GPU if available
+        self.device = torch.device(
+            "cuda:0" if torch.cuda.is_available() else "cpu")
 
         self.memory = []
 
@@ -58,7 +59,8 @@ class ReplayBuffer:
         raw_sample = [self.memory[i] for i in random_ints]
         exp_batch_lists = list(zip(*raw_sample))
 
-        exp_batch = tuple(torch.from_numpy(np.array(exp_batch_lists[i])).float()
+        exp_batch = tuple(torch.from_numpy(
+            np.array(exp_batch_lists[i])).float().to(self.device)
                           for i in range(len(exp_batch_lists)))
 
         return exp_batch
