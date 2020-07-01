@@ -12,6 +12,7 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 import numpy as np
 import torch.optim as optim
 import torch.nn.functional as F
+from torch.autograd import Variable
 
 from navigation.q import Q
 from navigation.replay_buffer import ReplayBuffer
@@ -89,7 +90,9 @@ class MainAgent:
             # compute the error
             target_vals = reward + (self.gamma * target_q_vals * (1 - done))
 
-            return F.mse_loss(target_vals, curr_q_est)
+            loss = F.mse_loss(target_vals, curr_q_est)
+
+            return Variable(loss, requires_grad=True)
 
     def learn(self, state, action, next_state, reward, done):
         """
@@ -107,10 +110,12 @@ class MainAgent:
 
                 # compute TD error
                 loss = self.compute_update(states, actions, nexts,
-                                                rewards, dones)
+                                           rewards, dones)
                 
                 # advance optimizer using loss
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+
+                #TODO: soft update
             self.t += 1

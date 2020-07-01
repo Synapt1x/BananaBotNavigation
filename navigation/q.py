@@ -49,8 +49,9 @@ class Q:
             return self.q[state, action]
         else:
             if action is None:
-                return self.q(state).detach().max(-1)[0].unsqueeze(-1)
-            return self.q(state).detach().gather(1, action)
+                return self.q(state).detach().max(-1)[0]
+            return self.q(state).detach().gather(1,
+                       action.view(-1, 1).long()).squeeze(-1)
 
     def get_action(self, state):
         """

@@ -98,6 +98,7 @@ class NavigationMain:
                 env_info = self.env.step(action)[self.brain_name]
                 next_state, reward, done = self._eval_state(env_info)
 
+                # learn from experience tuple batch
                 self.agent.learn(state, action, next_state, reward, done)
 
                 score += reward

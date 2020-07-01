@@ -58,7 +58,7 @@ class ReplayBuffer:
         raw_sample = [self.memory[i] for i in random_ints]
         exp_batch_lists = list(zip(*raw_sample))
 
-        exp_batch = tuple(torch.from_numpy(np.array(exp_batch_lists[i]))
-                     for i in range(len(exp_batch_lists)))
+        exp_batch = tuple(torch.from_numpy(np.array(exp_batch_lists[i])).float()
+                          for i in range(len(exp_batch_lists)))
 
         return exp_batch
