@@ -57,7 +57,7 @@ def main(config_file=DEFAULT_CONFIG):
     config_data = load_config(config_file)
     model_params = config_data.pop('model_params')
     navigation_prob = NavigationMain(**config_data, model_params=model_params)
-    navigation_prob.run_interaction()
+    navigation_prob.train_agent()
 
 
 if __name__ == '__main__':
