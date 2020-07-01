@@ -10,10 +10,14 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 
 import os
 import argparse
+import datetime
 import time
 
 from unityagents import UnityEnvironment
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # use backend for saving plots only
+from matplotlib import pyplot as plt
 
 from navigation.agent import MainAgent
 
@@ -37,6 +41,7 @@ class NavigationMain:
         self.agent = self._init_agent(model_params)
 
         self.score_store = []
+        self.average_scores = []
 
     @staticmethod
     def _eval_state(curr_env_info):
@@ -85,6 +90,39 @@ class NavigationMain:
         return MainAgent(**model_params, state_size=state_size,
                          action_size=action_size)
 
+    def save_training_plot(self):
+        """
+        Plot training performance through episodes.
+        """
+        num_eval = len(self.average_scores)
+
+        if num_eval > 100:
+            # Set up plot file and directory names
+            cur_dir = os.path.dirname(os.path.abspath(__file__))
+            plot_dir = os.path.join(cur_dir, 'output')
+            cur_date = datetime.datetime.now().strftime('%Y-%m-%d')
+            if not os.path.exists(plot_dir):
+                os.mkdir(plot_dir)
+            plot_file = os.path.join(plot_dir, 'training_performance.png')
+
+            # plot and save the plot file
+            fig = plt.figure(figsize=(12, 8))
+
+            plt.plot(self.average_scores, linewidth=2)
+            plt.title(f'Agent Average Score During Training', fontsize=20)
+
+            plt.xlabel('Iteration', fontsize=16)
+            plt.ylabel('Average Score', fontsize=16)
+            plt.xticks(fontsize=14)
+            plt.yticks(fontsize=14)
+
+            plt.savefig(plot_file)
+
+            print(f'Training plot saved to {plot_file}')
+        else:
+            print('Not enough average scores computed. Skipping plotting.')
+
+
     def run_episode(self, train_mode=True):
         """
         Run an episode of interaction in the Unity-ML Navigation environment.
@@ -113,16 +151,18 @@ class NavigationMain:
             self.score_store.append(score)
             score_avg = np.mean(self.score_store)
 
+            # update state of agent
+            self.agent.step()
+
             if done:
                 break
             time.sleep(self.frame_time)
 
+            # print average score as training progresses
             iteration += 1
             if (iteration % self.print_after_iterations) == 0:
                 self._print_progress(iteration, score_avg)
-
-            # update state of agent
-            self.agent.step()
+                self.average_scores.append(score_avg)
 
         self._print_on_close(score)
 
@@ -132,9 +172,11 @@ class NavigationMain:
         """
         episode = 0
         try:
+            # run episodes
             while episode < self.max_episodes:
                 self.run_episode(train_mode=train_mode)
         except KeyboardInterrupt:
             print("Exiting learning gracefully...")
         finally:
+            self.save_training_plot()
             self.env.close()
