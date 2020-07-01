@@ -36,7 +36,8 @@ class Q:
             return np.random.rand(shape=(self.state_size, self.action_size))
         elif self.alg == 'dqn':
             #TODO: pass parameters to architecture
-            return self.q = LinearModel()
+            return LinearModel(state_size=self.state_size,
+                               action_size=self.action_size)
 
     def get_value(self, state, action):
         """
@@ -44,8 +45,7 @@ class Q:
         if self.alg == 'q':
             return self.q[state, action]
         elif self.alg == 'dqn':
-            #TODO: need to use .gather to extract for batches
-            return self.q(state).detach()[action]
+            return self.q(state).detach().gather(1, action)
 
     def get_action(self, state):
         """
@@ -54,7 +54,7 @@ class Q:
             return np.argmax(self.q[state])
         elif self.alg == 'dqn':
             #TODO: ensure this works for batches
-            return self.q(state).detach().max(1)
+            return self.q(state).detach().max(1)[0].unsqueeze(1)
 
     def update_q_table(self, state, action, new_val):
         """

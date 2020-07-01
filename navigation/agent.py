@@ -13,6 +13,7 @@ import numpy as np
 import torch.optim as optim
 
 from navigation.q import Q
+from navigation.replay_buffer import ReplayBuffer
 
 
 class MainAgent:
@@ -37,14 +38,17 @@ class MainAgent:
         self.alpha = kwargs.get('alpha', 0.1)
         self.t_freq = kwargs.get('t_freq', 10)
 
+        # parameters for the replay buffer
+        self.buffer_size = kwargs.get('buffer_size', 1E6)
+        self.batch_size = kwargs.get('batch_size', 32)
+
         self.q = Q(alg, self.state_size, self.action_size)
         if 'dqn' in self.alg.lower():
             self.target_q = Q(alg, self.state_size, self.action_size)
-            self.opimizer = optim.Adam(self.q.parameters(), lr=self.alpha)
+            self.optimizer = optim.Adam(self.q.q.parameters(), lr=self.alpha)
             #TODO: implement replay buffer
-            #self.memory = ReplayBuffer(self.action_size, self.buffer_size,
-                                       #self.batch_size, seed=seed)
-            self.memory = None
+            self.memory = ReplayBuffer(self.action_size, self.buffer_size,
+                                       self.batch_size, seed=seed)
             self.t = 0
 
     def _select_random_a(self):
@@ -90,6 +94,7 @@ class MainAgent:
             self.q.update_value(state, action, new_value)
         else:
             self.memory.store_tuple(state, action, next_state, reward, done)
-            if (self.t % self.t_freq) == 0 and not self.memory.empty:
-                exp_tuples = self.memory.sample(self.batch_size)
+            if (self.t % self.t_freq) == 0 and not self.memory.is_empty():
+                exp_tuples = self.memory.sample()
+                states, actions, nexts, rewards, dones = exp_tuples
                 #TODO: finish passing to learn from tuple
