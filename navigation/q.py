@@ -40,25 +40,34 @@ class Q:
             return LinearModel(state_size=self.state_size,
                                action_size=self.action_size)
 
-    def get_value(self, state, action):
+    def get_value(self, state, action=None):
         """
         """
-        if self.alg == 'q':
+        if 'dqn' not in self.alg.lower():
+            if action is None:
+                return np.max(self.q[state])
             return self.q[state, action]
-        elif self.alg == 'dqn':
+        else:
+            if action is None:
+                return self.q(state).detach().max(-1)[0].unsqueeze(-1)
             return self.q(state).detach().gather(1, action)
 
     def get_action(self, state):
         """
         """
-        if self.alg == 'q':
+        if 'dqn' not in self.alg.lower():
             return np.argmax(self.q[state])
-        elif self.alg == 'dqn':
-            #TODO: ensure this works for batches
+        else:
+            # convert to tensfor if array is provided
             if isinstance(state, np.ndarray):
                 state = torch.from_numpy(state)
-            a_vals = self.q(state).detach()
-            a_max = a_vals.argmax(-1)
+
+            # set model to eval mode and determine max action
+            self.q.eval()
+            with torch.no_grad():
+                a_vals = self.q(state).detach()
+                a_max = a_vals.argmax(-1)
+            self.q.train()
 
             # return singular max action if not a batch
             if len(a_max.shape) == 0:
@@ -69,5 +78,4 @@ class Q:
     def update_q_table(self, state, action, new_val):
         """
         """
-        if self.alg == 'q':
-            self.q[state, action] = new_val
+        self.q[state, action] = new_val
