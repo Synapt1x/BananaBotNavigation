@@ -117,4 +117,3 @@ class NavigationMain:
             # gracefully close the env and print last score
             self.env.close()
             self._print_on_close(score)
-

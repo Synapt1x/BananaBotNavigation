@@ -1,6 +1,7 @@
 # general parameters
 file_path: 'envs/Banana_Linux_NoVis/Banana.x86_64'
 
+
 # model parameters
 model_params:
   alg: 'dqn'

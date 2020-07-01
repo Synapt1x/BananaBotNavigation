@@ -63,7 +63,7 @@ class MainAgent:
                                     self.q.q.parameters()):
             update_q = self.tau * q_param.data
             target_q = (1.0 - self.tau) * t_param.data
-            t_param.data.copy(update_q + target_q)
+            t_param.data.copy_(update_q + target_q)
 
     def _select_random_a(self):
         """
