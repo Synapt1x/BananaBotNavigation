@@ -41,7 +41,7 @@ class NavigationMain:
         """
         s = curr_env_info.vector_observations[0]
         r = curr_env_info.rewards[0]
-        d = curr_env_info.local_done[0]
+        d = int(curr_env_info.local_done[0])  # convert bool to int
 
         return s, r, d
 

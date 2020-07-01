@@ -12,7 +12,7 @@ import os
 import argparse
 
 import numpy as np
-
+import torch
 
 
 class ReplayBuffer:
@@ -27,6 +27,9 @@ class ReplayBuffer:
         self.batch_size = batch_size
         self.seed = seed
         np.random.seed(seed)  # seed for reproducibility
+
+        #TODO: Add torch device
+        #self.device = device
 
         self.memory = []
 
@@ -49,11 +52,13 @@ class ReplayBuffer:
         """
         Extract a random sample of tuples from memory.
         """
-        random_ints = np.random.randint(0, len(self.memory), self.batch_size)
+        random_ints = np.random.choice(len(self.memory), self.batch_size,
+                                       replace=False)
 
         raw_sample = [self.memory[i] for i in random_ints]
-        exp_batch = list(zip(*raw_sample))
+        exp_batch_lists = list(zip(*raw_sample))
 
-        return (exp_batch[0], exp_batch[1], exp_batch[2], exp_batch[3],
-                exp_batch[4])
-        
+        exp_batch = tuple(torch.from_numpy(np.array(exp_batch_lists[i]))
+                     for i in range(len(exp_batch_lists)))
+
+        return exp_batch

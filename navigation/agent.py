@@ -49,7 +49,7 @@ class MainAgent:
             #TODO: implement replay buffer
             self.memory = ReplayBuffer(self.action_size, self.buffer_size,
                                        self.batch_size, seed=seed)
-            self.t = 0
+            self.t = 1
 
     def _select_random_a(self):
         """
@@ -98,3 +98,4 @@ class MainAgent:
                 exp_tuples = self.memory.sample()
                 states, actions, nexts, rewards, dones = exp_tuples
                 #TODO: finish passing to learn from tuple
+            self.t += 1

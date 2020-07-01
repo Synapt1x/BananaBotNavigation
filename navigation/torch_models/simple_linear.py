@@ -54,7 +54,7 @@ class LinearModel(nn.Module):
         """
         Define the forward-pass for data through the model.
         """
-        data_x = torch.relu(self.input(state))
+        data_x = torch.relu(self.input(state.float()))
         for layer in self.hidden_layers:
             data_x = torch.relu(layer(data_x))
         action_values = torch.relu(self.output(data_x)) 
