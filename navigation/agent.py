@@ -39,6 +39,7 @@ class MainAgent:
         self.gamma = kwargs.get('gamma', 0.9)
         self.alpha = kwargs.get('alpha', 0.1)
         self.t_freq = kwargs.get('t_freq', 10)
+        self.tau = kwargs.get('tau', 0.1)
 
         # parameters for the replay buffer
         self.buffer_size = kwargs.get('buffer_size', 1E6)
@@ -51,6 +52,18 @@ class MainAgent:
             self.memory = ReplayBuffer(self.action_size, self.buffer_size,
                                        self.batch_size, seed=seed)
             self.t = 1
+
+    def _update_target(self):
+        """
+        Update target network using a soft rolling update from the primary
+        network (as opposed to every N-th iteration).
+        """
+        # soft update target network (as in DQN mini-project)
+        for t_param, q_param in zip(self.target_q.q.parameters(),
+                                    self.q.q.parameters()):
+            update_q = self.tau * q_param.data
+            target_q = (1.0 - self.tau) * t_param.data
+            t_param.data.copy(update_q + target_q)
 
     def _select_random_a(self):
         """
@@ -94,6 +107,7 @@ class MainAgent:
 
             return Variable(loss, requires_grad=True)
 
+
     def learn(self, state, action, next_state, reward, done):
         """
         """
@@ -117,5 +131,6 @@ class MainAgent:
                 loss.backward()
                 self.optimizer.step()
 
-                #TODO: soft update
+                self._update_target()
+                
             self.t += 1
