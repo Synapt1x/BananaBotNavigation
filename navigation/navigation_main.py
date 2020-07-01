@@ -99,7 +99,7 @@ class NavigationMain:
         if num_eval > 100:
             # Set up plot file and directory names
             cur_dir = os.path.dirname(os.path.abspath(__file__))
-            plot_dir = os.path.join(cur_dir, 'output')
+            plot_dir = os.path.join(cur_dir, os.pardir, 'output')
             cur_date = datetime.datetime.now().strftime('%Y-%m-%d')
             if not os.path.exists(plot_dir):
                 os.mkdir(plot_dir)

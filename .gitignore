@@ -1,6 +1,7 @@
 # data files
 models
 envs
+output
 
 *.pyc
 __pycache__
