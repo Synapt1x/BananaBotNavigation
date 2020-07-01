@@ -26,7 +26,7 @@ class LinearModel(nn.Module):
 
         self.state_size = state_size
         self.action_size = action_size
-        
+
         # set the seed
         self.seed = seed
         torch.manual_seed(self.seed)
@@ -46,7 +46,7 @@ class LinearModel(nn.Module):
         for dim_i, hidden_dim in enumerate(self.inter_dims[1:]):
             prev_dim = self.inter_dims[dim_i]
             hidden_layers.append(nn.Linear(prev_dim, hidden_dim))
-        
+
         self.hidden_layers = nn.ModuleList(hidden_layers)
         self.output = nn.Linear(self.inter_dims[-1], self.action_size)
 
@@ -57,6 +57,6 @@ class LinearModel(nn.Module):
         data_x = torch.relu(self.input(state.float()))
         for layer in self.hidden_layers:
             data_x = torch.relu(layer(data_x))
-        action_values = torch.relu(self.output(data_x)) 
+        action_values = torch.relu(self.output(data_x))
 
         return action_values

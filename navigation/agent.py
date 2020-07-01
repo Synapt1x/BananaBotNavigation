@@ -124,14 +124,14 @@ class MainAgent:
                 # compute TD error
                 loss = self.compute_update(states, actions, nexts,
                                            rewards, dones)
-                
+
                 # advance optimizer using loss
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
 
                 self._update_target()
-                
+
             self.t += 1
 
     def step(self):

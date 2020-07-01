@@ -64,7 +64,7 @@ class Q:
         else:
             # convert to tensfor if array is provided
             if isinstance(state, np.ndarray):
-                state = torch.from_numpy(state)
+                state = torch.from_numpy(state).to(self.device)
 
             # set model to eval mode and determine max action
             self.q.eval()
