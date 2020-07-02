@@ -102,7 +102,8 @@ class NavigationMain:
             cur_date = datetime.datetime.now().strftime('%Y-%m-%d')
             if not os.path.exists(plot_dir):
                 os.mkdir(plot_dir)
-            plot_file = os.path.join(plot_dir, 'training_performance.png')
+            plot_file = os.path.join(plot_dir,
+                                     f'training-performance-{cur_date}.png')
 
             # plot and save the plot file
             fig = plt.figure(figsize=(12, 8))
