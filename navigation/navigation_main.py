@@ -30,7 +30,7 @@ class NavigationMain:
     """
 
     def __init__(self, file_path, model_params, frame_time=0.075,
-                 max_episodes=1E5, print_after_iterations=50,
+                 max_episodes=1E5, print_after_iterations=100,
                  max_iterations=1E5):
         self.frame_time = frame_time
         self.print_after_iterations = print_after_iterations
@@ -150,6 +150,7 @@ class NavigationMain:
                 self.score_store = self.score_store[1:]
             self.score_store.append(score)
             score_avg = np.mean(self.score_store)
+            self.average_scores.append(score_avg)
 
             # update state of agent
             self.agent.step()
@@ -162,7 +163,6 @@ class NavigationMain:
             iteration += 1
             if (iteration % self.print_after_iterations) == 0:
                 self._print_progress(iteration, score_avg)
-                self.average_scores.append(score_avg)
 
         self._print_on_close(score)
 
@@ -170,11 +170,13 @@ class NavigationMain:
         """
         Train an agent by running learning episodes in the navigation task.
         """
-        episode = 0
+        episode = 1
         try:
             # run episodes
             while episode < self.max_episodes:
                 self.run_episode(train_mode=train_mode)
+                print(f'---- Episode {episode} completed ----')
+                episode += 1
         except KeyboardInterrupt:
             print("Exiting learning gracefully...")
         finally:

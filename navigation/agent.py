@@ -34,10 +34,10 @@ class MainAgent:
 
         # extract hyperparameters for the general algorithm
         self.epsilon = kwargs.get('epsilon', 0.9)
-        self.epsilon_decay = kwargs.get('epsilon_decay', 0.999)
-        self.epsilon_min = kwargs.get('epsilon_min', 0.1)
+        self.epsilon_decay = kwargs.get('epsilon_decay', 0.9999)
+        self.epsilon_min = kwargs.get('epsilon_min', 0.05)
         self.gamma = kwargs.get('gamma', 0.9)
-        self.alpha = kwargs.get('alpha', 0.1)
+        self.alpha = kwargs.get('alpha', 0.2)
         self.t_freq = kwargs.get('t_freq', 10)
         self.tau = kwargs.get('tau', 0.1)
 
