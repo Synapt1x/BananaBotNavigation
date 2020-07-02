@@ -30,10 +30,8 @@ class NavigationMain:
     """
 
     def __init__(self, file_path, model_params, frame_time=0.075,
-                 max_episodes=1E5, print_after_iterations=100,
-                 max_iterations=1E5):
+                 max_episodes=1E5, max_iterations=1E5):
         self.frame_time = frame_time
-        self.print_after_iterations = print_after_iterations
         self.max_iterations = max_iterations
         self.max_episodes = max_episodes
 
@@ -42,6 +40,7 @@ class NavigationMain:
 
         self.score_store = []
         self.average_scores = []
+        self.episode_scores = []
 
     @staticmethod
     def _eval_state(curr_env_info):
@@ -94,7 +93,7 @@ class NavigationMain:
         """
         Plot training performance through episodes.
         """
-        num_eval = len(self.average_scores)
+        num_eval = len(self.episode_scores)
 
         if num_eval > 100:
             # Set up plot file and directory names
@@ -108,10 +107,10 @@ class NavigationMain:
             # plot and save the plot file
             fig = plt.figure(figsize=(12, 8))
 
-            plt.plot(self.average_scores, linewidth=2)
+            plt.plot(self.episode_scores, linewidth=2)
             plt.title(f'Agent Average Score During Training', fontsize=20)
 
-            plt.xlabel('Iteration', fontsize=16)
+            plt.xlabel('Episode', fontsize=16)
             plt.ylabel('Average Score', fontsize=16)
             plt.xticks(fontsize=14)
             plt.yticks(fontsize=14)
@@ -161,8 +160,6 @@ class NavigationMain:
 
             # print average score as training progresses
             iteration += 1
-            if (iteration % self.print_after_iterations) == 0:
-                self._print_progress(iteration, score_avg)
 
         self._print_on_close(score)
 
@@ -175,7 +172,9 @@ class NavigationMain:
             # run episodes
             while episode < self.max_episodes:
                 self.run_episode(train_mode=train_mode)
-                print(f'---- Episode {episode} completed ----')
+                avg_after_ep = self.average_scores[-1]
+                self.episode_scores.append(avg_after_ep)
+                print(f'-- Episode {episode} completed - avg: {avg_after_ep}--')
                 episode += 1
         except KeyboardInterrupt:
             print("Exiting learning gracefully...")

@@ -1,7 +1,22 @@
 # general parameters
 file_path: 'envs/Banana_Linux/Banana.x86_64'
 
+# parameters for printing and controlling learning time
+frame_time: 0.02
+max_episodes: 10000
+max_iterations: 10000
+
 # model parameters
 model_params:
   alg: 'dqn'
-  frame_time: 0.02
+  # training parameters
+  epsilon: 0.9
+  epsilon_decay: 0.9999
+  epsilon_min: 0.01
+  gamma: 0.9
+  alpha: 0.2
+  t_freq: 10
+  tau: 0.1
+  # parameters for the replay buffer
+  buffer_size: 1E6
+  batch_size: 32
