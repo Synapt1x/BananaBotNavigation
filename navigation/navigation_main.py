@@ -190,7 +190,7 @@ class NavigationMain:
                 avg_after_ep = self.run_episode(train_mode=train_mode)
 
                 print(f'* Episode {episode} completed * avg: {avg_after_ep} *')
-                if not train_mode:
+                if train_mode:
                     self.agent.step()
 
                 episode += 1
