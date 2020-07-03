@@ -10,6 +10,7 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 
 
 import numpy as np
+import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
@@ -74,6 +75,36 @@ class MainAgent:
         Select a random action.
         """
         return np.random.randint(self.action_size)
+
+    def _extract_model_names(self, file_name):
+        """
+        Extract the model names for DQN.
+        """
+        file_split = file_name.split('.')[:-1]
+        main_model_name = ''.join(file_split + ['-main.pkl'])
+        target_model_name = ''.join(file_split + ['-target.pkl'])
+
+        return main_model_name, target_model_name
+
+    def save_model(self, file_name):
+        """
+        Save the agent's underlying model(s).
+        """
+        if 'dqn' in self.alg.lower():
+            main_file, target_file = self._extract_model_names(file_name)
+
+            self.q.save_model(main_file)
+            self.target_q.save_model(target_file)
+
+    def load_model(self, file_name):
+        """
+        Load the agent's underlying model(s).
+        """
+        if 'dqn' in self.alg.lower():
+            main_file, target_file = self._extract_model_names(file_name)
+
+            self.q.load_model(main_file)
+            self.target_q.load_model(target_file)
 
     def get_action(self, state):
         """

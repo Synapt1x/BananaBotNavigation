@@ -31,6 +31,8 @@ def parse_args():
             "reinforcement learning projects")
 
     # command-line arguments
+    arg_parser.add_argument('-t', '--train', action='store_true',
+                            default=False)
     arg_parser.add_argument('-c', '--config', dest='config_file',
                             type=str, default=DEFAULT_CONFIG)
     args = vars(arg_parser.parse_args())
@@ -50,14 +52,20 @@ def load_config(path):
     return config_data
 
 
-def main(config_file=DEFAULT_CONFIG):
+def main(train=False, config_file=DEFAULT_CONFIG):
     """
     Main runner for the code CLI.
     """
     config_data = load_config(config_file)
+    model_file = config_data.pop('model_file')
     model_params = config_data.pop('model_params')
     navigation_prob = NavigationMain(model_params=model_params, **config_data)
-    navigation_prob.train_agent()
+    if train:
+        navigation_prob.train_agent()
+        navigation_prob.save_model(model_file)
+    else:
+        navigation_prob.load_model(model_file)
+        navigation_prob.train_agent(train_mode=False)
 
 
 if __name__ == '__main__':

@@ -88,6 +88,18 @@ class NavigationMain:
         return MainAgent(**model_params, state_size=state_size,
                          action_size=action_size)
 
+    def save_model(self, file_name):
+        """
+        Save the model to the file name specified.
+        """
+        self.agent.save_model(file_name)
+
+    def load_model(self, file_name):
+        """
+        Load the model specified.
+        """
+        self.agent.load_model(file_name)
+
     def save_training_plot(self):
         """
         Plot training performance through episodes.
@@ -139,7 +151,8 @@ class NavigationMain:
             next_state, reward, done = self._eval_state(env_info)
 
             # learn from experience tuple batch
-            self.agent.learn(state, action, next_state, reward, done)
+            if train_mode:
+                self.agent.learn(state, action, next_state, reward, done)
 
             # increment score and compute average
             score += reward
@@ -171,13 +184,19 @@ class NavigationMain:
         try:
             # run episodes
             while episode < self.max_episodes:
+                # set epsilon to 0 to always use Q network for actions if eval
+                if not train_mode:
+                    self.agent.epsilon = 0.0
                 avg_after_ep = self.run_episode(train_mode=train_mode)
+
                 print(f'* Episode {episode} completed * avg: {avg_after_ep} *')
-                print(f'epsilon = {self.agent.epsilon}')
-                self.agent.step()
+                if not train_mode:
+                    self.agent.step()
+
                 episode += 1
         except KeyboardInterrupt:
             print("Exiting learning gracefully...")
         finally:
-            self.save_training_plot()
+            if train_mode:
+                self.save_training_plot()
             self.env.close()

@@ -47,6 +47,23 @@ class Q:
                                action_size=self.action_size,
                                inter_dims=self.inter_dims).to(self.device)
 
+    def save_model(self, file_name):
+        """
+        Save the underlying model.
+        """
+        torch.save(self.q.state_dict(), file_name)
+
+    def load_model(self, file_name):
+        """
+        Load the parameters for the underlying model.
+        """
+        if self.device == 'cpu':
+            self.q.load_state_dict(torch.load(file_name,
+                                              map_location=self.device))
+        else:
+            self.q.load_state_dict(torch.load(file_name))
+        self.q.eval()
+
     def get_value(self, state, action=None):
         """
         """
@@ -60,7 +77,7 @@ class Q:
             return self.q(state).gather(
                 1, action.view(-1, 1).long()).squeeze(-1)
 
-    def get_action(self, state):
+    def get_action(self, state, in_train=True):
         """
         """
         if 'dqn' not in self.alg.lower():
@@ -75,7 +92,10 @@ class Q:
             with torch.no_grad():
                 a_vals = self.q(state).detach()
                 a_max = a_vals.argmax(-1)
-            self.q.train()
+
+            # reset to train if model is not meant to stay in eval mode
+            if in_train:
+                self.q.train()
 
             # return singular max action if not a batch
             if len(a_max.shape) == 0:
