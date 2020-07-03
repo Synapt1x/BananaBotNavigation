@@ -12,6 +12,7 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 import numpy as np
 import torch
 from navigation.torch_models.simple_linear import LinearModel
+from navigation.torch_models.dueling_network import DuelingNetwork
 
 
 class Q:
@@ -46,6 +47,10 @@ class Q:
             return LinearModel(state_size=self.state_size,
                                action_size=self.action_size,
                                inter_dims=self.inter_dims).to(self.device)
+        elif self.alg == 'dueling_dqn':
+            return DuelingNetwork(state_size=self.state_size,
+                                  action_size=self.action_size,
+                                  inter_dims=self.inter_dims).to(self.device)
 
     def save_model(self, file_name):
         """
@@ -98,7 +103,7 @@ class Q:
                 self.q.train()
 
             # return singular max action if not a batch
-            if len(a_max.shape) == 0:
+            if len(a_max.shape) == 0 or (len(a_max)) == 1:
                 return a_max.item()
 
             return a_max[0].unsqueeze(1)
