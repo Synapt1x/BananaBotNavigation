@@ -77,7 +77,7 @@ class DuelingNetwork(nn.Module):
 
         # pass same data through v stream to get value estimates
         v_data = torch.relu(self.v_stream_in(data_x))
-        v_data = (self.v_stream_out(v_data)
+        v_data = self.v_stream_out(v_data)
         value_vals = v_data.repeat(1, self.action_size)
 
         action_values = advantage_vals + value_vals
