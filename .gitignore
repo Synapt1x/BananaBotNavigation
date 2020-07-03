@@ -6,3 +6,6 @@ output
 *.pyc
 __pycache__
 unity-environment.log
+
+# files for pycharm
+.idea

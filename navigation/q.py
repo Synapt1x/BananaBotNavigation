@@ -20,10 +20,13 @@ class Q:
     and updating the underlying Q-function representation.
     """
 
-    def __init__(self, alg, state_size, action_size, **kwargs):
+    def __init__(self, alg, state_size, action_size, inter_dims=None, **kwargs):
         self.alg = alg
         self.state_size = state_size
         self.action_size = action_size
+        if inter_dims is None:
+            inter_dims = [64, 256]
+        self.inter_dims = inter_dims
 
         # initalize device; use GPU if available
         self.device = torch.device(
@@ -41,7 +44,8 @@ class Q:
             return np.random.rand(shape=(self.state_size, self.action_size))
         elif self.alg == 'dqn':
             return LinearModel(state_size=self.state_size,
-                               action_size=self.action_size).to(self.device)
+                               action_size=self.action_size,
+                               inter_dims=self.inter_dims).to(self.device)
 
     def get_value(self, state, action=None):
         """
@@ -53,8 +57,8 @@ class Q:
         else:
             if action is None:
                 return self.q(state).detach().max(-1)[0]
-            return self.q(state).detach().gather(1,
-                       action.view(-1, 1).long()).squeeze(-1)
+            return self.q(state).gather(
+                1, action.view(-1, 1).long()).squeeze(-1)
 
     def get_action(self, state):
         """

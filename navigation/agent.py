@@ -45,9 +45,13 @@ class MainAgent:
         self.buffer_size = kwargs.get('buffer_size', 1E6)
         self.batch_size = kwargs.get('batch_size', 32)
 
-        self.q = Q(alg, self.state_size, self.action_size)
+        # architecture parameters for DQN
+        self.inter_dims = kwargs.get('inter_dims', [64, 256])
+
+        self.q = Q(alg, self.state_size, self.action_size, self.inter_dims)
         if 'dqn' in self.alg.lower():
-            self.target_q = Q(alg, self.state_size, self.action_size)
+            self.target_q = Q(alg, self.state_size, self.action_size,
+                              self.inter_dims)
             self.optimizer = optim.Adam(self.q.q.parameters(), lr=self.alpha)
             self.memory = ReplayBuffer(self.action_size, self.buffer_size,
                                        self.batch_size, seed=seed)
@@ -105,7 +109,7 @@ class MainAgent:
 
             loss = F.mse_loss(target_vals, curr_q_est)
 
-            return Variable(loss, requires_grad=True)
+            return loss
 
     def learn(self, state, action, next_state, reward, done):
         """

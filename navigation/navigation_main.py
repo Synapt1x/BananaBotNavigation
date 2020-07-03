@@ -40,7 +40,6 @@ class NavigationMain:
 
         self.score_store = []
         self.average_scores = []
-        self.episode_scores = []
 
     @staticmethod
     def _eval_state(curr_env_info):
@@ -93,7 +92,7 @@ class NavigationMain:
         """
         Plot training performance through episodes.
         """
-        num_eval = len(self.episode_scores)
+        num_eval = len(self.average_scores)
 
         if num_eval > 100:
             # Set up plot file and directory names
@@ -108,7 +107,7 @@ class NavigationMain:
             # plot and save the plot file
             fig = plt.figure(figsize=(12, 8))
 
-            plt.plot(self.episode_scores, linewidth=2)
+            plt.plot(self.average_scores, linewidth=2)
             plt.title(f'Agent Average Score During Training', fontsize=20)
 
             plt.xlabel('Episode', fontsize=16)
@@ -121,7 +120,6 @@ class NavigationMain:
             print(f'Training plot saved to {plot_file}')
         else:
             print('Not enough average scores computed. Skipping plotting.')
-
 
     def run_episode(self, train_mode=True):
         """
@@ -146,14 +144,9 @@ class NavigationMain:
             # increment score and compute average
             score += reward
             state = next_state
-            if len(self.score_store) == 1000:
-                self.score_store = self.score_store[1:]
-            self.score_store.append(score)
-            score_avg = np.mean(self.score_store)
-            self.average_scores.append(score_avg)
 
-            # update state of agent
-            self.agent.step()
+            # # update state of agent
+            # self.agent.step()
 
             if done:
                 break
@@ -162,7 +155,13 @@ class NavigationMain:
             # print average score as training progresses
             iteration += 1
 
-        self._print_on_close(score)
+        if len(self.score_store) == 1000:
+            self.score_store = self.score_store[1:]
+        self.score_store.append(score)
+        score_avg = np.mean(self.score_store[-100:])
+        self.average_scores.append(score_avg)
+
+        return score_avg
 
     def train_agent(self, train_mode=True):
         """
@@ -172,10 +171,10 @@ class NavigationMain:
         try:
             # run episodes
             while episode < self.max_episodes:
-                self.run_episode(train_mode=train_mode)
-                avg_after_ep = self.average_scores[-1]
-                self.episode_scores.append(avg_after_ep)
-                print(f'-- Episode {episode} completed - avg: {avg_after_ep}--')
+                avg_after_ep = self.run_episode(train_mode=train_mode)
+                print(f'* Episode {episode} completed * avg: {avg_after_ep} *')
+                print(f'epsilon = {self.agent.epsilon}')
+                self.agent.step()
                 episode += 1
         except KeyboardInterrupt:
             print("Exiting learning gracefully...")
