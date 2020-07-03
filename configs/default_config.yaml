@@ -4,7 +4,7 @@ model_file: 'models/first_model.pkl'
 
 # parameters for printing and controlling learning time
 frame_time: 0.00
-max_episodes: 50
+max_episodes: 1000
 max_iterations: 10000
 
 # model parameters
