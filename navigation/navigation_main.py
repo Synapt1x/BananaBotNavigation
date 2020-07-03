@@ -11,6 +11,7 @@ For Deep Reinforcement Learning Nanodegree offered by Udacity.
 import os
 import argparse
 import datetime
+import pickle
 import time
 
 from unityagents import UnityEnvironment
@@ -66,6 +67,19 @@ class NavigationMain:
         """
         print(f"Final Score: {score}")
 
+    @staticmethod
+    def _get_output_dir():
+        """
+        Return the output file path.
+        """
+        cur_dir = os.path.dirname(os.path.abspath(__file__))
+        out_dir = os.path.join(cur_dir, os.pardir, 'output')
+        cur_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        if not os.path.exists(out_dir):
+            os.mkdir(out_dir)
+
+        return out_dir
+
     def _init_env(self, file_path):
         """
         Initialize the Unity-ML Navigation environment.
@@ -108,12 +122,8 @@ class NavigationMain:
 
         if num_eval > 100:
             # Set up plot file and directory names
-            cur_dir = os.path.dirname(os.path.abspath(__file__))
-            plot_dir = os.path.join(cur_dir, os.pardir, 'output')
-            cur_date = datetime.datetime.now().strftime('%Y-%m-%d')
-            if not os.path.exists(plot_dir):
-                os.mkdir(plot_dir)
-            plot_file = os.path.join(plot_dir,
+            out_dir = self._get_output_dir()
+            plot_file = os.path.join(out_dir,
                                      f'training-performance-{cur_date}.png')
 
             # plot and save the plot file
@@ -127,11 +137,35 @@ class NavigationMain:
             plt.xticks(fontsize=14)
             plt.yticks(fontsize=14)
 
+            first_solved = np.argmax(self.average_scores >= 13)
+            if first_solved > 0:
+                plt.axvline(first_solved, color='r', linewidth=2,
+                            linestyle='--')
+
             plt.savefig(plot_file)
 
             print(f'Training plot saved to {plot_file}')
         else:
             print('Not enough average scores computed. Skipping plotting.')
+
+    def save_results(self):
+        """
+        Save training averages over time.
+        """
+        num_eval = len(self.average_scores)
+
+        if num_eval > 100:
+            # Save results
+            out_dir = self._get_output_dir()
+            res_file = os.path.join(out_dir,
+                                    f'results-file-{cur_date}.pkl')
+
+            with open(res_file, 'wb') as o_file:
+                pickle.dump(self.average_scores, o_file)
+
+            print(f'Training results saved to {res_file}')
+        else:
+            print('Not enough average score computed. Skipping saving results.')
 
     def run_episode(self, train_mode=True):
         """
@@ -158,9 +192,6 @@ class NavigationMain:
             score += reward
             state = next_state
 
-            # # update state of agent
-            # self.agent.step()
-
             if done:
                 break
             time.sleep(self.frame_time)
@@ -171,6 +202,7 @@ class NavigationMain:
         if len(self.score_store) == 1000:
             self.score_store = self.score_store[1:]
         self.score_store.append(score)
+        # compute average over 100 episodes
         score_avg = np.mean(self.score_store[-100:])
         self.average_scores.append(score_avg)
 
@@ -199,4 +231,5 @@ class NavigationMain:
         finally:
             if train_mode:
                 self.save_training_plot()
+                self.save_results()
             self.env.close()
