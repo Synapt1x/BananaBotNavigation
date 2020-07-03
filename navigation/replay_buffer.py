@@ -27,6 +27,7 @@ class ReplayBuffer:
         self.action_size = action_size
         self.buffer_size = buffer_size
         self.batch_size = batch_size
+
         self.prioritized = prioritized
         self.prioritized_e = prioritized_e
         self.prioritized_a = prioritized_a
