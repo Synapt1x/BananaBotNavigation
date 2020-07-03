@@ -138,10 +138,16 @@ class NavigationMain:
             plt.xticks(fontsize=14)
             plt.yticks(fontsize=14)
 
+            plt.xlim([0, num_eval])
+            plt.ylim([0, np.max(self.average_scores)])
+
             if first_solved > 0:
-                plt.axvline(first_solved, color='r', linewidth=2,
+                min_val = np.min(self.average_scores)
+                plt.axvline(first_solved, color='g', linewidth=1,
                             linestyle='--')
-                plt.text(first_solved + 10, 1, f'Solved in {first_solved})
+                plt.text(first_solved + 10, min_val + 0.5,
+                         f'Solved in {first_solved}', color='g',
+                         fontsize=13)
 
             plt.savefig(plot_file)
 
