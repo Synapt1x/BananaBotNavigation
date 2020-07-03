@@ -78,7 +78,7 @@ class NavigationMain:
         if not os.path.exists(out_dir):
             os.mkdir(out_dir)
 
-        return out_dir
+        return out_dir, cur_date
 
     def _init_env(self, file_path):
         """
@@ -114,7 +114,7 @@ class NavigationMain:
         """
         self.agent.load_model(file_name)
 
-    def save_training_plot(self):
+    def save_training_plot(self, first_solved):
         """
         Plot training performance through episodes.
         """
@@ -122,7 +122,7 @@ class NavigationMain:
 
         if num_eval > 100:
             # Set up plot file and directory names
-            out_dir = self._get_output_dir()
+            out_dir, cur_date = self._get_output_dir()
             plot_file = os.path.join(out_dir,
                                      f'training-performance-{cur_date}.png')
 
@@ -130,17 +130,18 @@ class NavigationMain:
             fig = plt.figure(figsize=(12, 8))
 
             plt.plot(self.average_scores, linewidth=2)
-            plt.title(f'Agent Average Score During Training', fontsize=20)
+            plt.title(f'Average Score Over Recent 100 Episodes During Training',
+                      fontsize=20)
 
             plt.xlabel('Episode', fontsize=16)
             plt.ylabel('Average Score', fontsize=16)
             plt.xticks(fontsize=14)
             plt.yticks(fontsize=14)
 
-            first_solved = np.argmax(self.average_scores >= 13)
             if first_solved > 0:
                 plt.axvline(first_solved, color='r', linewidth=2,
                             linestyle='--')
+                plt.text(first_solved + 10, 1, f'Solved in {first_solved})
 
             plt.savefig(plot_file)
 
@@ -156,7 +157,7 @@ class NavigationMain:
 
         if num_eval > 100:
             # Save results
-            out_dir = self._get_output_dir()
+            out_dir, cur_date = self._get_output_dir()
             res_file = os.path.join(out_dir,
                                     f'results-file-{cur_date}.pkl')
 
@@ -230,6 +231,9 @@ class NavigationMain:
             print("Exiting learning gracefully...")
         finally:
             if train_mode:
-                self.save_training_plot()
+                first_solved = np.argmax(np.array(self.average_scores) >= 13)
+                if first_solved > 0:
+                    print(f'*** SOLVED IN {first_solved} EPISODES ***')
+                self.save_training_plot(first_solved)
                 self.save_results()
             self.env.close()
