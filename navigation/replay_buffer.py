@@ -21,10 +21,17 @@ class ReplayBuffer:
     replay buffer to sample during learning steps in the DQN algorithm.
     """
 
-    def __init__(self, action_size, buffer_size=1E6, batch_size=32, seed=13):
+    def __init__(self, action_size, buffer_size=1E6, batch_size=32,
+                 priorited=False, seed=13):
         self.action_size = action_size
         self.buffer_size = buffer_size
         self.batch_size = batch_size
+        self.prioritized_e = prioritized_e
+        self.prioritized_a = prioritized_a
+        self.priorited = prioritized
+        if self.prioritized:
+            self.errs = []
+            self.probs = []
         self.seed = seed
         np.random.seed(seed)  # seed for reproducibility
 
@@ -40,22 +47,38 @@ class ReplayBuffer:
         """
         return len(self.memory) < self.batch_size
 
-    def store_tuple(self, state, action, next_state, reward, done):
+    def store_tuple(self, state, action, next_state, reward, done, err=None):
         """
         Add the experience tuple to memory.
         """
         # only keep the most recent tuples if memory size has been reached
         if len(self.memory) == self.buffer_size:
             self.memory = self.memory[1:]
-        self.memory.append((state, action, next_state, reward, done))
+            if self.prioritized:
+                self.errs = self.errs[1:]
+                self.probs = self.probs[1:]
+        if self.prioritized:
+            self.memory.append((state, action, next_state, reward, done))
+            self.errs.append(err)
+            ind_probs = np.pow(np.array(self.errs) + self.e,
+                               self.prioritized_a)
+            self.probs = ind_probs / np.sum(ind_probs)
+        else:
+            self.memory.append((state, action, next_state, reward, done))
 
     def sample(self):
         """
         Extract a random sample of tuples from memory.
         """
-        random_ints = np.random.choice(len(self.memory), self.batch_size,
-                                       replace=False)
+        # randomly select either weighted by priority or uniformly
+        if self.prioritized:
+            random_ints = np.random.choice(len(self.memory), self.batch_size,
+                                           p=self.probs)
+        else:
+            random_ints = np.random.choice(len(self.memory), self.batch_size,
+                                           replace=False)
 
+        # then extract batch based on random indices selected
         raw_sample = [self.memory[i] for i in random_ints]
         exp_batch_lists = list(zip(*raw_sample))
 

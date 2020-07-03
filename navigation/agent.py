@@ -45,6 +45,9 @@ class MainAgent:
         # parameters for the replay buffer
         self.buffer_size = kwargs.get('buffer_size', 1E6)
         self.batch_size = kwargs.get('batch_size', 32)
+        self.prioritized = kwargs.get('prioritized', False)
+        self.prioritized_e = kwargs.get('prioritized_e', 0.01)
+        self.prioritized_a = kwargs.get('prioritized_a', 0.75)
 
         # architecture parameters for DQN
         self.inter_dims = kwargs.get('inter_dims', [64, 256])
@@ -175,6 +178,8 @@ class MainAgent:
                 # compute TD error
                 loss = self.compute_update(states, actions, nexts,
                                            rewards, dones)
+
+                #
 
                 # advance optimizer using loss
                 self.optimizer.zero_grad()
