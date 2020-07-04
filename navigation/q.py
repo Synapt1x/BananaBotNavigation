@@ -39,15 +39,15 @@ class Q:
         """
         Initialize the representation of the Q-function.
         """
-        if self.alg == 'random':
+        if self.alg.lower() == 'random':
             return None
-        elif self.alg == 'q':
+        elif self.alg.lower() == 'q':
             return np.random.rand(shape=(self.state_size, self.action_size))
-        elif self.alg == 'dqn':
+        elif self.alg.lower() == 'dqn':
             return LinearModel(state_size=self.state_size,
                                action_size=self.action_size,
                                inter_dims=self.inter_dims).to(self.device)
-        elif self.alg == 'dueling_dqn':
+        elif 'dueling' in self.alg.lower():
             return DuelingNetwork(state_size=self.state_size,
                                   action_size=self.action_size,
                                   inter_dims=self.inter_dims).to(self.device)
