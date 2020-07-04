@@ -1,6 +1,6 @@
 # general parameters
 file_path: 'envs/Banana_Linux_NoVis/Banana.x86_64'
-model_file: 'models/first-ddqn.pkl'
+model_file: 'models/next-final-dqn.pkl'
 
 # parameters for printing and controlling learning time
 frame_time: 0.00
@@ -9,7 +9,7 @@ max_iterations: 10000
 
 # model parameters
 model_params:
-  alg: 'ddqn'
+  alg: 'dqn'
   # training parameters
   epsilon: 1.0
   epsilon_decay: 0.996

@@ -95,7 +95,7 @@ class Q:
             # set model to eval mode and determine max action
             self.q.eval()
             with torch.no_grad():
-                a_vals = self.q(state).detach()
+                a_vals = self.q(state)
                 a_max = a_vals.argmax(-1)
 
             # reset to train if model is not meant to stay in eval mode

@@ -1,6 +1,6 @@
 # general parameters
 file_path: 'envs/Banana_Linux/Banana.x86_64'
-model_file: 'models/first-ddqn.pkl'
+model_file: 'models/next-final-dqn.pkl'
 
 # parameters for printing and controlling learning time
 frame_time: 0.0325

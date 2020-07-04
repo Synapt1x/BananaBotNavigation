@@ -133,8 +133,8 @@ class MainAgent:
         else:
             # get target q for next state (on max) and current estimate
             if 'ddqn' in self.alg.lower():
-                max_action = self.target_q.get_action(next_state)
-                target_q_vals = self.q.get_value(next_state, max_action)
+                max_action = self.q.get_action(next_state)
+                target_q_vals = self.target_q.get_value(next_state, max_action)
             else:
                 target_q_vals = self.target_q.get_value(next_state)
             curr_q_est = self.q.get_value(state, action)
@@ -155,7 +155,7 @@ class MainAgent:
             self.q.update_value(state, action, new_value)
         else:
             self.memory.store_tuple(state, action, next_state, reward, done)
-            if (self.t % self.t_freq) == 0 and not self.memory.is_empty():
+            if not self.memory.is_empty():
                 # extract experience tuples
                 exp_tuples = self.memory.sample()
                 states, actions, nexts, rewards, dones = exp_tuples
@@ -169,7 +169,8 @@ class MainAgent:
                 loss.backward()
                 self.optimizer.step()
 
-                self._update_target()
+                if (self.t % self.t_freq) == 0:
+                    self._update_target()
 
             self.t += 1
 
