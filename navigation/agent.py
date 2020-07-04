@@ -132,7 +132,11 @@ class MainAgent:
                 reward + self.gamma * next_val - curr_val)
         else:
             # get target q for next state (on max) and current estimate
-            target_q_vals = self.target_q.get_value(next_state)
+            if 'ddqn' in self.alg.lower():
+                max_action = self.q.get_action(next_state)
+                target_q_vals = self.target_q.get_value(next_state, max_action)
+            else:
+                target_q_vals = self.target_q.get_value(next_state)
             curr_q_est = self.q.get_value(state, action)
 
             # compute the error
