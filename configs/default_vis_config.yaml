@@ -1,6 +1,6 @@
 # general parameters
 file_path: 'envs/Banana_Linux/Banana.x86_64'
-model_file: 'models/first-dueling-ddqn.pkl'
+model_file: 'models/first-ddqn.pkl'
 
 # parameters for printing and controlling learning time
 frame_time: 0.0325
@@ -9,7 +9,7 @@ max_iterations: 10000
 
 # model parameters
 model_params:
-  alg: 'dueling_ddqn'
+  alg: 'ddqn'
   # training parameters
   epsilon: 1.0
   epsilon_decay: 0.996

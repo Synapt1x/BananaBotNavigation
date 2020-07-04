@@ -43,7 +43,7 @@ class Q:
             return None
         elif self.alg.lower() == 'q':
             return np.random.rand(shape=(self.state_size, self.action_size))
-        elif self.alg.lower() == 'dqn':
+        elif self.alg.lower() == 'dqn' or self.alg.lower() == 'ddqn':
             return LinearModel(state_size=self.state_size,
                                action_size=self.action_size,
                                inter_dims=self.inter_dims).to(self.device)
