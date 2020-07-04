@@ -106,6 +106,9 @@ class Q:
             if len(a_max.shape) == 0 or (len(a_max)) == 1:
                 return a_max.item()
 
+            if len(a_max.shape) == 1:
+                return a_max.unsqueeze(1)
+
             return a_max[0].unsqueeze(1)
 
     def update_q_table(self, state, action, new_val):
