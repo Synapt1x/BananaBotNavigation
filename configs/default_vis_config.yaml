@@ -15,7 +15,7 @@ model_params:
   epsilon_decay: 0.9999
   epsilon_min: 0.05
   gamma: 0.99
-  alpha: 0.002
+  alpha: 0.1
   t_freq: 100
   tau: 0.02
   # parameters for the replay buffer
