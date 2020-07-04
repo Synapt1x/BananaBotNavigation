@@ -80,32 +80,74 @@ As the agent interacts, it receives information from the environment of the form
 
 Interactions available to the agent include moving in one of four directions:
 \begin{itemize}
-	\item move forward, 
+	\item move forward,
 	\item move backward,
 	\item turn left,
-	\item turn right,	
+	\item turn right,
 \end{itemize}
 with these four actions forming the action space $\mathcal{A}$. The agent solves the game by understanding what the optimal action is to take in each of the possible states that it finds itself in.
 
 \section{Approach}
 
-Initially I had approached this problem by first attempting to use Q-learning as a first benchmark, but given the continuous nature of the state space $\mathcal{S}$ this would also necessitate discretization or tile coding the space. For this reason, I instead chose to implement a vanilla DQN network and iteratively improve it to achieve better performance.
+Initially I had approached this problem by first attempting to use Q-learning as
+a first benchmark, but given the continuous nature of the state space
+$\mathcal{S}$ this would also necessitate discretization or tile coding the
+space. For this reason, I instead chose to implement a vanilla DQN (Deep
+Q-network) and iteratively improve it to achieve better performance.
 
+\subsection{DQN}
 
+My first complete algorithm for DQN leveraged a simple multi-layer perceptron
+using the following architecture:
 
 \FloatBarrier
 
 \begin{figure}[!ht]
-	\centering
-	\caption{}
-	\label{fig:}
+    \centering
+    \caption{}
+    \label{fig:dqn-architecture}
 \end{figure}
 
 \FloatBarrier
 
+Even though learning performance from the vanilla DQN was quite good (see results in
+Fig. \ref{fig:dqn-performance}), I wanted to see explore options to determine if
+performance could be improved.
+
+\subsection{Improving DQN}
+
+Since I had the least experience with implementing prioritized experience
+replay, this was the first method I chose to expand on my vanilla DQN.
+
+\subsubsection{Prioritized Experience Replay}
+
+Using prioritized experience replay expands on the idea of sampling from the
+replay buffer to provide experience tuples for the agent to learn from. In the
+original DQN algorithm, this sampling is uniform across all stored experience
+tuples in the replay buffer, whereas prioritized experience replay
+\textit{prioritizes} experience tuples that resulted in a larger loss from
+expected Q-values, capturing that these tuples may have been more impactful
+during the learning process and will likely be more useful to sample more often
+than lesser impactful experience tuples.
+
+In order to expand on my initial implementation, I changed the following:
+
+\subsubsection{Double DQN}
+
+
+\subsubsection{Dueling DDQN}
+
+\FloatBarrier
+
+\begin{figure}[!ht]
+    \centering
+    \caption{}
+    \label{fig:dueling-architecture}
+\end{figure}
+
+\FloatBarrier
 
 \section{Results and Discussion}
-
 
 
 \subsection{Learning Performance}
