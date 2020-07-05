@@ -9,13 +9,13 @@ max_iterations: 10000
 
 # model parameters
 model_params:
-  alg: 'ddqn'
+  alg: 'dqn'
   # training parameters
   epsilon: 1.0
-  epsilon_decay: 0.9999
+  epsilon_decay: 0.996
   epsilon_min: 0.05
   gamma: 0.99
-  alpha: 0.1
+  alpha: 0.002
   t_freq: 100
   tau: 0.02
   # parameters for the replay buffer
