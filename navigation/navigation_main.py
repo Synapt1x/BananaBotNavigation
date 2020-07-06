@@ -206,9 +206,6 @@ class NavigationMain:
             # print average score as training progresses
             iteration += 1
 
-            if train_mode:
-                self.agent.step()
-
         if len(self.score_store) == 1000:
             self.score_store = self.score_store[1:]
         self.score_store.append(score)
@@ -234,6 +231,10 @@ class NavigationMain:
                 print(f'* Episode {episode} completed * avg: {avg_after_ep} *')
 
                 episode += 1
+                if train_mode:
+                    self.agent.step()
+                print('epsilon: ', self.agent.epsilon)
+
         except KeyboardInterrupt:
             print("Exiting learning gracefully...")
         finally:
