@@ -120,18 +120,20 @@ hyperparameters:
 
 \FloatBarrier
 
-\begin{tabular}[!ht]
-	\begin{table}{| c | c |}
-	\hline
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{ c | c }
 	\textbf{hyperparameter} & \textbf{values} \\
-	$\epsilon_{decay}$ & $\[0.99, 0.995, 0.999, 0.9999, 0.99999\]$ \\
-	$\alpha$ & $\[0.00005, 0.0001, 0.0005, 0.001, 0.005\]$ \\
-	$\tau$ & $\[0.005, 0.01, 0.1\]$ \\
-	$\gamma$ & $\[0.8, 0.9, 0.95, 0.99\]$ \\
 	\hline
-	\end{table}
+	$\epsilon_{decay}$ & $[0.99, 0.996, 0.999, 0.9999, 0.99999]$ \\
+	$\alpha$ & $[0.00005, 0.0001, 0.0005, 0.001, 0.005]$ \\
+	$\tau$ & $[0.005, 0.01, 0.1]$ \\
+	$\gamma$ & $[0.8, 0.9, 0.95, 0.99]$ \\
+	\hline
+	\end{tabular}
 	\caption{Hyperparameters experimented with to train an agent using DQN.}
-\end{tabular}
+	\label{tbl:hyperparameters}
+\end{table}
 
 \FloatBarrier
 
@@ -187,7 +189,7 @@ achieving an average score of +13 over 100 episodes after the 1185th episode.
 
 \begin{figure}[!ht]
 	\centering
-	%\includegraphics[width=0.65\linewidth]{images/dqn-results.png}
+	\includegraphics[width=0.8\linewidth]{images/dqn-results.png}
 	\caption{}
 	\label{fig:dqn-results}
 \end{figure}
