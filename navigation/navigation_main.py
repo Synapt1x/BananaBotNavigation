@@ -145,9 +145,9 @@ class NavigationMain:
                 min_val = np.min(self.average_scores)
                 plt.axvline(first_solved, color='g', linewidth=1,
                             linestyle='--')
-                plt.text(first_solved + 10, min_val + 0.5,
-                         f'Solved in {first_solved}', color='g',
-                         fontsize=13)
+                plt.text(first_solved + 10, min_val + 1.5,
+                         f'Solved in {first_solved} episodes', color='g',
+                         fontsize=14)
 
             plt.savefig(plot_file)
 
