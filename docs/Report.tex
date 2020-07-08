@@ -104,9 +104,34 @@ using the following architecture:
 
 \begin{figure}[!ht]
     \centering
-    \caption{}
+	%\includegraphics[width=\linewidth]{images/dqn-architecture.png}
+    \caption{The 8-layer MLP used in the DQN algorithm.}
     \label{fig:dqn-architecture}
 \end{figure}
+
+\FloatBarrier
+
+I chose to experiment with a deeper model that leveraged increasingly wider linear layers,
+ ending up with an 8-layer neural network with units of sizes [64, 64, 128, 128, 
+ 256, 256, 512, 512] and $ReLU$ activation functions between each layer.
+
+I also needed to experiment hyperparameter tuning for the following 
+hyperparameters:
+
+\FloatBarrier
+
+\begin{tabular}[!ht]
+	\begin{table}{| c | c |}
+	\hline
+	\textbf{hyperparameter} & \textbf{values} \\
+	$\epsilon_{decay}$ & $\[0.99, 0.995, 0.999, 0.9999, 0.99999\]$ \\
+	$\alpha$ & $\[0.00005, 0.0001, 0.0005, 0.001, 0.005\]$ \\
+	$\tau$ & $\[0.005, 0.01, 0.1\]$ \\
+	$\gamma$ & $\[0.8, 0.9, 0.95, 0.99\]$ \\
+	\hline
+	\end{table}
+	\caption{Hyperparameters experimented with to train an agent using DQN.}
+\end{tabular}
 
 \FloatBarrier
 
@@ -131,6 +156,7 @@ during the learning process and will likely be more useful to sample more often
 than lesser impactful experience tuples.
 
 In order to expand on my initial implementation, I changed the following:
+- storage of 
 
 
 \subsubsection{Double DQN}
@@ -150,23 +176,39 @@ In order to expand on my initial implementation, I changed the following:
 
 \section{Results and Discussion}
 
-
 \subsection{Learning Performance}
+
+The results in Fig. \ref{fig:dqn-results} show that the the vanilla DQN
+algorithm with the architecture shown in Fig. \ref{fig:dqn-architecture} achieved 
+quite good performance, solving the navigation problem in 1185 episodes. That is, 
+achieving an average score of +13 over 100 episodes after the 1185th episode.
 
 \FloatBarrier
 
 \begin{figure}[!ht]
 	\centering
+	%\includegraphics[width=0.65\linewidth]{images/dqn-results.png}
 	\caption{}
-	\label{fig:dqn}
+	\label{fig:dqn-results}
 \end{figure}
 
 \FloatBarrier
 
+After running experimentation over the parameters listed in Tbl. \ref{tbl:parameters} 
+the optimal parameters were:
+\begin{itemize}
+	\item $\epsilon_{decay} = 0.996$,
+	\item $\alpha = 0.001$,
+	\item $\tau = 0.01$,
+	\item $\gamma = 0.99$.
+\end{itemize}
+
+Evident in the learning performance of the agent, not only was the agent able to 
+solve the navigation problem fairly quickly, but it was able to continue to improve 
+beyond this, likely because I also enforced a minimum value on $\epsilon_{min} = 0.05$ 
+to ensure that the agent is never \textit{entirely} acting greedily.
 
 \subsection{Next Steps}
-
-
 
 
 
