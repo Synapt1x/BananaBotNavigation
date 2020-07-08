@@ -169,7 +169,15 @@ class MainAgent:
                                             reward, done)
             self.q.update_value(state, action, new_value)
         else:
-            self.memory.store_tuple(state, action, next_state, reward, done)
+            loss = self.compute_update(state, action, next_state, reward, done)
+
+            # store experience tuple into replay buffer
+            if self.prioritized:
+                self.memory.store_tuple(state, action, next_state, reward, done)
+            else:
+                self.memory.store_tuple(state, action, next_state, reward, done,
+                                        loss.data)
+
             if not self.memory.is_empty():
                 # extract experience tuples
                 exp_tuples = self.memory.sample()
@@ -178,8 +186,6 @@ class MainAgent:
                 # compute TD error
                 loss = self.compute_update(states, actions, nexts,
                                            rewards, dones)
-
-                #
 
                 # advance optimizer using loss
                 self.optimizer.zero_grad()
