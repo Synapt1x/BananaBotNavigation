@@ -1,6 +1,6 @@
 # general parameters
 file_path: 'envs/Banana_Linux_NoVis/Banana.x86_64'
-model_file: 'models/medium-alpha.pkl'
+model_file: 'models/ddqn-medium-alpha.pkl'
 
 # parameters for printing and controlling learning time
 frame_time: 0.00
@@ -9,15 +9,15 @@ max_iterations: 10000
 
 # model parameters
 model_params:
-  alg: 'dqn'
+  alg: 'ddqn'
   # training parameters
   epsilon: 1.0
   epsilon_decay: 0.996
   epsilon_min: 0.05
   gamma: 0.99
-  alpha: 0.0002
-  t_freq: 100
-  tau: 0.01
+  alpha: 0.01
+  t_freq: 20
+  tau: 0.05
   # parameters for the replay buffer
   buffer_size: 1000000
   batch_size: 256

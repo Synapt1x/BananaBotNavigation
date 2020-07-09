@@ -129,6 +129,7 @@ class NavigationMain:
             # plot and save the plot file
             fig = plt.figure(figsize=(12, 8))
 
+            plt.plot(self.score_store, linewidth=1, alpha=0.65)
             plt.plot(self.average_scores, linewidth=2)
             plt.title(f'Average Score Over Recent 100 Episodes During Training',
                       fontsize=20)
@@ -141,11 +142,13 @@ class NavigationMain:
             plt.xlim([0, num_eval])
             plt.ylim([0, np.max(self.average_scores)])
 
+            # plot indicator for solved iteration
             if first_solved > 0:
                 min_val = np.min(self.average_scores)
-                plt.axvline(first_solved, color='g', linewidth=1,
-                            linestyle='--')
-                plt.text(first_solved + 10, min_val + 1.5,
+                plt.axhline(y=13, color='b', linewidth=1, linestyle='--')
+                plt.Circle((first_solved, 13), radius=3, color='g',
+                           linewidth=3)
+                plt.text(first_solved - 150, 14,
                          f'Solved in {first_solved} episodes', color='g',
                          fontsize=14)
 
@@ -233,7 +236,6 @@ class NavigationMain:
                 episode += 1
                 if train_mode:
                     self.agent.step()
-                print('epsilon: ', self.agent.epsilon)
 
         except KeyboardInterrupt:
             print("Exiting learning gracefully...")
