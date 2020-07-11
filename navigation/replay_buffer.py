@@ -22,16 +22,16 @@ class ReplayBuffer:
     """
 
     def __init__(self, action_size, buffer_size=1E6, batch_size=32,
-                 prioritized=False, self.prioritized_a, self.prioritized_e,
-                 prioritized_b=0, seed=13):
+                 prioritized=False, prioritized_e=0.0, prioritized_a=1.0,
+                 prioritized_b=1.0, seed=13):
         self.action_size = action_size
         self.buffer_size = buffer_size
         self.batch_size = batch_size
 
+        # set parameters for prioritized replay
         self.prioritized = prioritized
         self.prioritized_e = prioritized_e
         self.prioritized_a = prioritized_a
-        self.prioritized_b = prioritized_b
         if self.prioritized:
             self.errs = []
             self.probs = []
