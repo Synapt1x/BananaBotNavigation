@@ -85,7 +85,18 @@ Interactions available to the agent include moving in one of four directions:
 	\item turn left,
 	\item turn right,
 \end{itemize}
-with these four actions forming the action space $\mathcal{A}$. The agent solves the game by understanding what the optimal action is to take in each of the possible states that it finds itself in.
+with these four actions forming the action space $\mathcal{A}$. The agent solves the game by understanding what the optimal action is to take in each of the possible states that it finds itself in. An example image of the game is shown below in Fig. \ref{fig:example-game-image}.
+
+\FloatBarrier
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/example-game-image.png}
+	\caption{A snapshot of the banana navigation game.}
+	\label{fig:example-game-image}
+\end{figure}
+
+\FloatBarrier
 
 \section{Approach}
 
@@ -113,7 +124,7 @@ using the following architecture:
 
 I chose to experiment with a deeper model that leveraged increasingly wider linear layers,
  ending up with an 8-layer neural network with units of sizes [64, 64, 128, 128, 
- 256, 256, 512, 512] and $ReLU$ activation functions between each layer.
+ 256, 256, 512, 512] and $ReLU$ activation functions between each layer. This architecture was experimented with and ultimately chosen to capture ever-increasingly complex relationships between the state values in the input, determining more high-order information between ray projections as states are passed further into a deeper network.
 
 I also needed to experiment hyperparameter tuning for the following 
 hyperparameters:
@@ -161,21 +172,6 @@ In order to expand on my initial implementation, I changed the following:
 - storage of 
 
 
-\subsubsection{Double DQN}
-
-
-\subsubsection{Dueling DDQN}
-
-\FloatBarrier
-
-\begin{figure}[!ht]
-    \centering
-    \caption{}
-    \label{fig:dueling-architecture}
-\end{figure}
-
-\FloatBarrier
-
 \section{Results and Discussion}
 
 \subsection{Learning Performance}
@@ -210,7 +206,24 @@ solve the navigation problem fairly quickly, but it was able to continue to impr
 beyond this, likely because I also enforced a minimum value on $\epsilon_{min} = 0.05$ 
 to ensure that the agent is never \textit{entirely} acting greedily.
 
+Although performance tends to improve consistently over the 2000 episode training period, there is quite a bit of variation in the raw episode scores indicated by the light blue line. This is likely due to the aforementioned lower bound of 0.05 on $\epsilon$, which means that the agent still acts completely random 5\% of the time. This lower bound is reached fairly rapidly with $\epsilon_{decay}=0.996$, at approximately episode 747 (i.e., $log_{0.996}(0.05) \approx 747$).
+
 \subsection{Next Steps}
+
+There remains room for improvement for the algorithm, although through experimentation with a vanilla DQN I was able to achieve fairly good results. Some logical next steps, however, would include:
+\begin{itemize}
+\item implementing double DQN to assist with any value overestimation that can occur in vanilla DQN,
+\item implementing duelling DQN to provide better separation between favourable actions in states, though this may not provide an extreme improvement other than more rapid learning due to the small action space.
+\end{itemize}
+
+With regard to experimentation and overall improvement of the DQN algorithm at hand, it may make sense to experiment more with the rate at which the target network is updated a bit more. Currently, the target network is not only updated on a static basis of every 100 iterations, but I also use a soft-update that doesn't completely transfer weights from the Q-network to the target network but rather transfers as in:
+\begin{equation}
+	\theta_{target} \leftarrow (1 - \tau)\theta_{target} + \tau\theta_{q}
+\end{equation}
+for target network weights $\theta_{target}$ and Q-network weights $\theta_{q}$.
+
+Additionally, it may be interesting to determine if the algorithm may be able to improve if the learning rate $\alpha$ was adaptive rather than static, which may enable the algorithm to learn less and less. This could provide a better overall agent in the end, particularly if $\epsilon$ is decayed to a smaller lower bound, since then the agent could learn from exploration sufficiently well and when it has reached a point that it will no longer be learning much from new actions, it has little to gain from taking completely random actions.
+
 
 
 

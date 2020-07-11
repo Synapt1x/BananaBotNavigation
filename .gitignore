@@ -45,3 +45,7 @@ unity-environment.log
 *.mtc1
 *.out
 *.synctex.gz
+
+# gif and videos
+*.gif
+*.mp4

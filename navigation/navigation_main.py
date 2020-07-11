@@ -19,6 +19,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # use backend for saving plots only
 from matplotlib import pyplot as plt
+from matplotlib.patches import Ellipse
 
 from navigation.agent import MainAgent
 
@@ -129,8 +130,10 @@ class NavigationMain:
             # plot and save the plot file
             fig = plt.figure(figsize=(12, 8))
 
-            plt.plot(self.score_store, linewidth=1, alpha=0.65)
-            plt.plot(self.average_scores, linewidth=2)
+            plt.plot(self.score_store, linewidth=1, alpha=0.65,
+                     label='raw_episode_score')
+            plt.plot(self.average_scores, linewidth=2,
+                     label='100_episode_avg_score')
             plt.title(f'Average Score Over Recent 100 Episodes During Training',
                       fontsize=20)
 
@@ -140,17 +143,22 @@ class NavigationMain:
             plt.yticks(fontsize=14)
 
             plt.xlim([0, num_eval])
-            plt.ylim([0, np.max(self.average_scores)])
+            plt.ylim([0, np.max(self.score_store)])
 
             # plot indicator for solved iteration
             if first_solved > 0:
                 min_val = np.min(self.average_scores)
-                plt.axhline(y=13, color='b', linewidth=1, linestyle='--')
-                plt.Circle((first_solved, 13), radius=3, color='g',
-                           linewidth=3)
-                plt.text(first_solved - 150, 14,
-                         f'Solved in {first_solved} episodes', color='g',
+                plt.axhline(y=13, color='g', linewidth=1, linestyle='--')
+                ax = fig.gca()
+
+                ax.add_artist(Ellipse((first_solved, 13),
+                                      width=20, height=0.3, color='r',
+                                      linewidth=2))
+                plt.text(first_solved + 10, 12.25,
+                         f'Solved in {first_solved} episodes', color='r',
                          fontsize=14)
+
+            plt.legend(fontsize=12)
 
             plt.savefig(plot_file)
 
@@ -209,8 +217,6 @@ class NavigationMain:
             # print average score as training progresses
             iteration += 1
 
-        if len(self.score_store) == 1000:
-            self.score_store = self.score_store[1:]
         self.score_store.append(score)
         # compute average over 100 episodes
         score_avg = np.mean(self.score_store[-100:])

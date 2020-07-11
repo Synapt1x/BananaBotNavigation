@@ -90,6 +90,9 @@ class MainAgent:
         """
         Save the agent's underlying model(s).
         """
+        if self.alg.lower() == 'random':
+            return None
+
         if 'dqn' in self.alg.lower():
             main_file, target_file = self._extract_model_names(file_name)
 
@@ -100,6 +103,9 @@ class MainAgent:
         """
         Load the agent's underlying model(s).
         """
+        if self.alg.lower() == 'random':
+            return None
+
         if 'dqn' in self.alg.lower():
             main_file, target_file = self._extract_model_names(file_name)
 
@@ -111,7 +117,7 @@ class MainAgent:
         Extract the action intended by the agent based on the selection
         criteria.
         """
-        if self.alg == 'random':
+        if self.alg.lower() == 'random':
             return self._select_random_a()
         else:
             rand_val = np.random.rand()
@@ -124,6 +130,9 @@ class MainAgent:
         Compute the updated value for the Q-function estimate based on the
         experience tuple.
         """
+        if self.alg.lower() == 'random':
+            return 0.0
+
         if 'dqn' not in self.alg.lower():
             curr_val = self.q.get_value(state, action)
             next_val = self.q.get_value(next_state, self.get_action(next_state))
@@ -149,6 +158,9 @@ class MainAgent:
     def learn(self, state, action, next_state, reward, done):
         """
         """
+        if self.alg.lower() == 'random':
+            return None
+
         if 'dqn' not in self.alg.lower():
             new_value = self.compute_update(state, action, next_state,
                                             reward, done)
