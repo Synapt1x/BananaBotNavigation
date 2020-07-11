@@ -19,7 +19,7 @@ model_params:
   t_freq: 100
   tau: 0.01
   # parameters for the replay buffer
-  buffer_size: 1000000
+  buffer_size: 10000
   batch_size: 256
 
   # architecture

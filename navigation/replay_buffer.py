@@ -24,7 +24,6 @@ class ReplayBuffer:
     def __init__(self, action_size, buffer_size=1E6, batch_size=32,
                  prioritized=False, prioritized_e=0.0, prioritized_a=1.0,
                  prioritized_b=1.0, seed=13):
-                 seed=13):
         self.action_size = action_size
         self.buffer_size = buffer_size
         self.batch_size = batch_size
@@ -84,7 +83,7 @@ class ReplayBuffer:
         # randomly select either weighted by priority or uniformly
         if self.prioritized:
             random_ints = np.random.choice(len(self.memory), self.batch_size,
-                                           p=self.probs)
+                                           p=self.probs, replace=False)
         else:
             random_ints = np.random.choice(len(self.memory), self.batch_size,
                                            replace=False)
