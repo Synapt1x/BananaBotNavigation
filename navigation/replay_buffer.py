@@ -24,6 +24,7 @@ class ReplayBuffer:
     def __init__(self, action_size, buffer_size=1E6, batch_size=32,
                  prioritized=False, prioritized_e=0.0, prioritized_a=1.0,
                  prioritized_b=1.0, seed=13):
+                 seed=13):
         self.action_size = action_size
         self.buffer_size = buffer_size
         self.batch_size = batch_size
@@ -44,6 +45,12 @@ class ReplayBuffer:
 
         self.memory = []
 
+    def to_tensor(self, data):
+        """
+        Convert provided data into a torch tensor as appropriate.
+        """
+        return torch.from_numpy(np.array(data)).float().to(self.device)
+
     def is_empty(self):
         """
         Check to see if memory contains enough tuples for sampling.
@@ -63,8 +70,8 @@ class ReplayBuffer:
         if self.prioritized:
             self.memory.append((state, action, next_state, reward, done))
             self.errs.append(err)
-            ind_probs = np.pow(np.array(self.errs) + self.e,
-                               self.prioritized_a)
+            ind_probs = np.power(np.array(self.errs) + self.prioritized_e,
+                                 self.prioritized_a)
             self.probs = ind_probs / np.sum(ind_probs)
         else:
             self.memory.append((state, action, next_state, reward, done))
@@ -85,8 +92,13 @@ class ReplayBuffer:
         raw_sample = [self.memory[i] for i in random_ints]
         exp_batch_lists = list(zip(*raw_sample))
 
-        exp_batch = tuple(torch.from_numpy(
-            np.array(exp_batch_lists[i])).float().to(self.device)
-                          for i in range(len(exp_batch_lists)))
+        # also extract errors if using prioritized replay
+        if self.prioritized:
+            errs = [self.errs[i] for i in random_ints]
+            errs = self.to_tensor(errs)
+        else:
+            errs = None
 
-        return exp_batch
+        exp_batch = tuple(self.to_tensor(d_list) for d_list in exp_batch_lists)
+
+        return exp_batch, errs

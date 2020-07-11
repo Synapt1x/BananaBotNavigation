@@ -1,0 +1,31 @@
+# general parameters
+file_path: 'envs/Banana_Linux_NoVis/Banana.x86_64'
+model_file: 'models/prioritized-dqn.pkl'
+
+# parameters for printing and controlling learning time
+frame_time: 0.00
+max_episodes: 2000
+max_iterations: 10000
+
+# model parameters
+model_params:
+  alg: 'dqn'
+  # training parameters
+  epsilon: 1.0
+  epsilon_decay: 0.996
+  epsilon_min: 0.05
+  gamma: 0.99
+  alpha: 0.001
+  t_freq: 100
+  tau: 0.01
+  # parameters for the replay buffer
+  buffer_size: 1000000
+  batch_size: 256
+
+  # architecture
+  inter_dims: [64, 64, 128, 128, 256, 256, 512, 512]
+
+  prioritized: True
+  prioritized_e: 0.05
+  prioritized_a: 0.75
+  prioritized_b: 0.75

@@ -60,8 +60,8 @@ class MainAgent:
             self.optimizer = optim.Adam(self.q.q.parameters(), lr=self.alpha)
             self.memory = ReplayBuffer(self.action_size, self.buffer_size,
                                        self.batch_size, self.prioritized,
-                                       self.prioritized_e, self.prioritiezd_a,
-                                       self.prioritized_b, seed=seed)
+                                       self.prioritized_e, self.prioritized_a,
+                                       seed=seed)
             self.t = 1
 
     def _update_target(self):
@@ -131,7 +131,8 @@ class MainAgent:
                 return self._select_random_a()
             return self.q.get_action(state)
 
-    def compute_update(self, state, action, next_state, reward, done):
+    def compute_update(self, state, action, next_state, reward, done,
+                       errors=None):
         """
         Compute the updated value for the Q-function estimate based on the
         experience tuple.
@@ -157,7 +158,10 @@ class MainAgent:
             # compute the error
             target_vals = reward + (self.gamma * target_q_vals * (1 - done))
 
-            loss = F.mse_loss(target_vals, curr_q_est)
+            if errors is not None:
+                loss = (errors * F.mse_loss(target_vals, curr_q_est)).mean()
+            else:
+                loss = F.mse_loss(target_vals, curr_q_est)
 
             return loss
 
@@ -172,23 +176,30 @@ class MainAgent:
                                             reward, done)
             self.q.update_value(state, action, new_value)
         else:
-            loss = self.compute_update(state, action, next_state, reward, done)
-
             # store experience tuple into replay buffer
             if self.prioritized:
-                self.memory.store_tuple(state, action, next_state, reward, done)
-            else:
+                # cast to tensors and compute loss
+                t_state = self.memory.to_tensor(state)
+                t_action = self.memory.to_tensor(action)
+                t_next_state = self.memory.to_tensor(next_state)
+                t_reward = self.memory.to_tensor(reward)
+                t_done = self.memory.to_tensor(done)
+
+                loss = self.compute_update(t_state, t_action, t_next_state,
+                                           t_reward, t_done, errors=None)
                 self.memory.store_tuple(state, action, next_state, reward, done,
-                                        loss.data)
+                                        loss.item())
+            else:
+                self.memory.store_tuple(state, action, next_state, reward, done)
 
             if not self.memory.is_empty():
                 # extract experience tuples
-                exp_tuples = self.memory.sample()
+                exp_tuples, errors = self.memory.sample()
                 states, actions, nexts, rewards, dones = exp_tuples
 
                 # compute TD error
                 loss = self.compute_update(states, actions, nexts,
-                                           rewards, dones)
+                                           rewards, dones, errors)
 
                 # advance optimizer using loss
                 self.optimizer.zero_grad()

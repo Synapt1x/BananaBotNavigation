@@ -77,8 +77,11 @@ class Q:
                 return np.max(self.q[state])
             return self.q[state, action]
         else:
+            q_vals = self.q(state).detach()
             if action is None:
-                return self.q(state).detach().max(-1)[0]
+                return q_vals.max(-1)[0]
+            if len(q_vals.shape) == 1:
+                return self.q(state)[action.long()]
             return self.q(state).gather(
                 1, action.view(-1, 1).long()).squeeze(-1)
 
