@@ -4,13 +4,17 @@ Project code for developing an RL agent that navigates in a virtual world collec
 ## Author
 
 Chris Cadonic
+
 chriscadonic@gmail.com
 
 ## Background
 
 **
-A full report describing much of my approach, results, and potential improvements can be found in the docs/Report.pdf. This is specifically
-found [here](docs/Report.pdf).**
+A full report describing much of my approach, results, and potential improvements can be found in the file [docs/Report.pdf](docs/Report.pdf).**
+
+In this project, a Unity environment that contains a world full of spawning yellow and blue bananas is tasked to an agent to navigate. I trained an agent to navigate this environment so as to collect as many yellow bananas as possible, while attempting to avoid collecting as blue bananas.
+
+The agent learns from state information provided by the environment, containing 37 `float` values reprepresenting things such as positon in the space, and rays to nearby bananas and their colours, etc. The agent can move forward, turn left, turn right, or move backward, and needs to learn how to act so as to maximize its score per game episode, where each yellow banana collected nets the agent +1 reward and each blue banana collected nets the agent -1 reward.
 
 Prior to learning, if the agent acts completely randomly then the following is an example illustration of how the agent navigates the environment:
 
@@ -21,7 +25,7 @@ Prior to learning, if the agent acts completely randomly then the following is a
 
 ### Setup
 
-Just as in outlined in ![the DRLND repository](https://github.com/udacity/deep-reinforcement-learning#dependencies), the following steps can be used to setup the environment:
+Just as in outlined in [the DRLND repository](https://github.com/udacity/deep-reinforcement-learning#dependencies), the following steps can be used to setup the environment:
 
 1. Setup an `anaconda` environment (optional):
 ```
@@ -37,7 +41,7 @@ activate drlnd
 ```
 in Windows.
 
-2. As in the DRLND repository, install dependencies after cloning this project repository using:
+2. As in the DRLND repository, install dependencies using:
 ```
 git clone https://github.com/udacity/deep-reinforcement-learning.git
 cd deep-reinforcement-learning/python
@@ -48,7 +52,6 @@ pip install .
 
 This environment is specifically provided by Udacity to contain the learning environment. A link to a file will be added here once verified that
 such a link can be provided openly.
-
 
 With the Unity environment acquired, the directory structure for this project should then be:
 
@@ -71,8 +74,8 @@ The primary entry point for running the code is with the CLI tool `runner.py`. T
 python runner.py
 ```
 from the root of this project repository. Arguments can be provided as follows:
--`-t` (or `--train`): train the model with the provided configuration file (Defaults to False),
--`-c` (or `--config`): specify the configuration to use for training the model (Defaults to `configs/default_config.yaml`.
+- `-t` (or `--train`): train the model with the provided configuration file (Defaults to False),
+- `-c` (or `--config`): specify the configuration to use for training the model (Defaults to `configs/default_config.yaml`.
 
 Thus, running the model to show inference using the final trained model without visualization can be run using:
 ```
