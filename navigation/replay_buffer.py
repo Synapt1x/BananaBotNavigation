@@ -33,6 +33,7 @@ class ReplayBuffer:
         self.prioritized = prioritized
         self.prioritized_e = prioritized_e
         self.prioritized_a = prioritized_a
+        self.prioritized_b = prioritized_b
         if self.prioritized:
             self.errs = []
             self.probs = []
@@ -94,11 +95,13 @@ class ReplayBuffer:
 
         # also extract errors if using prioritized replay
         if self.prioritized:
-            errs = [self.errs[i] for i in random_ints]
-            errs = self.to_tensor(errs)
+            probs = [self.probs[i] for i in random_ints]
+            weights = torch.pow(self.to_tensor(probs * len(self.memory)),
+                                -self.prioritized_b)
+            weights = weights / torch.max(weights)  # normalize to max w_i
         else:
-            errs = None
+            weights = None
 
         exp_batch = tuple(self.to_tensor(d_list) for d_list in exp_batch_lists)
 
-        return exp_batch, errs
+        return exp_batch, weights

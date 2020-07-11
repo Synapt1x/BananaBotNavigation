@@ -28,4 +28,5 @@ model_params:
   prioritized: True
   prioritized_e: 0.05
   prioritized_a: 0.75
-  prioritized_b: 0.75
+  prioritized_b: 0.1
+  prioritized_b_increase: 1.002

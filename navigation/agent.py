@@ -49,6 +49,8 @@ class MainAgent:
         self.prioritized_e = kwargs.get('prioritized_e', 0.00)
         self.prioritized_a = kwargs.get('prioritized_a', 1.0)
         self.prioritized_b = kwargs.get('prioritized_b', 1.0)
+        self.prioritized_b_increase = kwargs.get('prioritized_b_increase',
+                                                 1.002)
 
         # architecture parameters for DQN
         self.inter_dims = kwargs.get('inter_dims', [64, 256])
@@ -61,7 +63,7 @@ class MainAgent:
             self.memory = ReplayBuffer(self.action_size, self.buffer_size,
                                        self.batch_size, self.prioritized,
                                        self.prioritized_e, self.prioritized_a,
-                                       seed=seed)
+                                       self.prioritized_b, seed=seed)
             self.t = 1
 
     def _update_target(self):
@@ -132,7 +134,7 @@ class MainAgent:
             return self.q.get_action(state)
 
     def compute_update(self, state, action, next_state, reward, done,
-                       errors=None):
+                       weights=None):
         """
         Compute the updated value for the Q-function estimate based on the
         experience tuple.
@@ -158,8 +160,8 @@ class MainAgent:
             # compute the error
             target_vals = reward + (self.gamma * target_q_vals * (1 - done))
 
-            if errors is not None:
-                loss = (errors * F.mse_loss(target_vals, curr_q_est)).mean()
+            if weights is not None:
+                loss = (weights * F.mse_loss(target_vals, curr_q_est)).mean()
             else:
                 loss = F.mse_loss(target_vals, curr_q_est)
 
@@ -186,7 +188,7 @@ class MainAgent:
                 t_done = self.memory.to_tensor(done)
 
                 loss = self.compute_update(t_state, t_action, t_next_state,
-                                           t_reward, t_done, errors=None)
+                                           t_reward, t_done, weights=None)
                 self.memory.store_tuple(state, action, next_state, reward, done,
                                         loss.item())
             else:
@@ -194,12 +196,12 @@ class MainAgent:
 
             if not self.memory.is_empty():
                 # extract experience tuples
-                exp_tuples, errors = self.memory.sample()
+                exp_tuples, weights = self.memory.sample()
                 states, actions, nexts, rewards, dones = exp_tuples
 
                 # compute TD error
                 loss = self.compute_update(states, actions, nexts,
-                                           rewards, dones, errors)
+                                           rewards, dones, weights)
 
                 # advance optimizer using loss
                 self.optimizer.zero_grad()
@@ -216,4 +218,8 @@ class MainAgent:
         Update state of the agent and take a step through the learning process
         to reflect experiences have been acquired and/or learned from.
         """
-        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
+        update_eps = self.epsilon * self.epsilon_decay
+        self.epsilon = max(self.epsilon_min, update_eps)
+        if self.prioritized:
+            update_b = self.memory.prioritized_b * self.prioritized_b_increase
+            self.memory.prioritized_b = min(1.0, update_b)
