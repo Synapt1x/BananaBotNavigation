@@ -130,7 +130,7 @@ class NavigationMain:
             # plot and save the plot file
             fig = plt.figure(figsize=(12, 8))
 
-            plt.plot(self.score_store, linewidth=1, alpha=0.65,
+            plt.plot(self.score_store, linewidth=1, alpha=0.4,
                      label='raw_episode_score')
             plt.plot(self.average_scores, linewidth=2,
                      label='100_episode_avg_score')
@@ -152,8 +152,8 @@ class NavigationMain:
                 ax = fig.gca()
 
                 ax.add_artist(Ellipse((first_solved, 13),
-                                      width=20, height=0.3, color='r',
-                                      linewidth=2))
+                                      width=20, height=0.3, facecolor='None',
+                                      edgecolor='r', linewidth=3, zorder=10))
                 plt.text(first_solved + 10, 12.25,
                          f'Solved in {first_solved} episodes', color='r',
                          fontsize=14)
