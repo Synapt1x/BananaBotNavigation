@@ -43,6 +43,21 @@ class ReplayBuffer:
     def store_tuple(self, state, action, next_state, reward, done):
         """
         Add the experience tuple to memory.
+
+        Parameters
+        ----------
+        state: np.array/torch.Tensor
+            Tensor singleton containing state information
+        action: np.array/torch.Tensor
+            Tensor singleton containing the action taken from state
+        next_state: np.array/torch.Tensor
+            Tensor singleton containing information about what state followed
+            the action taken from the state provided by 'state'
+        reward: np.array/torch.Tensor
+            Tensor singleton containing reward information
+        done: np.array/torch.Tensor
+            Tensor singleton representing whether or not the episode ended after
+            action was taken
         """
         # only keep the most recent tuples if memory size has been reached
         if len(self.memory) == self.buffer_size:

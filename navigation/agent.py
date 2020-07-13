@@ -89,6 +89,11 @@ class MainAgent:
     def save_model(self, file_name):
         """
         Save the agent's underlying model(s).
+
+        Parameters
+        ----------
+        file_name: str
+            File name to which the agent will be saved for future use.
         """
         if self.alg.lower() == 'random':
             return None
@@ -102,6 +107,11 @@ class MainAgent:
     def load_model(self, file_name):
         """
         Load the agent's underlying model(s).
+
+        Parameters
+        ----------
+        file_name: str
+            File name from which the agent will be loaded.
         """
         if self.alg.lower() == 'random':
             return None
@@ -115,7 +125,20 @@ class MainAgent:
     def get_action(self, state):
         """
         Extract the action intended by the agent based on the selection
-        criteria.
+        criteria, either random or using epsilon-greedy policy and taking the
+        max from Q(s=state, a) from Q.
+
+        Parameters
+        ----------
+        state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing state information
+            either in the shape (1, 37) or (batch_size, 37)
+
+        Returns
+        -------
+        int
+            Integer indicating the action selected by the agent based on the
+            state provided.
         """
         if self.alg.lower() == 'random':
             return self._select_random_a()
@@ -129,6 +152,26 @@ class MainAgent:
         """
         Compute the updated value for the Q-function estimate based on the
         experience tuple.
+
+        Parameters
+        ----------
+        state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing state information
+        action: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing actions taken
+        next_state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing information about what
+            state followed actions taken from the states provided by 'state'
+        reward: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing reward information
+        done: np.array/torch.Tensor
+            Array or Tensor singleton or batch representing whether or not the
+            episode ended after actions were taken
+
+        Returns
+        -------
+        torch.float32
+            Loss value (with grad) based on target and Q-value estimates.
         """
         if self.alg.lower() == 'random':
             return 0.0
@@ -157,6 +200,24 @@ class MainAgent:
 
     def learn(self, state, action, next_state, reward, done):
         """
+        Learn from an experience tuple. If using DQN, which is the default, then
+        store an experience tuple into memory and only learn if enough tuples
+        are available in the replay buffer to learn from batches of tuples.
+
+        Parameters
+        ----------
+        state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing state information
+        action: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing actions taken
+        next_state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing information about what
+            state followed actions taken from the states provided by 'state'
+        reward: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing reward information
+        done: np.array/torch.Tensor
+            Array or Tensor singleton or batch representing whether or not the
+            episode ended after actions were taken
         """
         if self.alg.lower() == 'random':
             return None

@@ -17,7 +17,7 @@ In this project, a Unity environment that contains a world full of spawning yell
 The agent learns from state information provided by the environment, containing 37 `float` values reprepresenting things such as the agents velocity and projeced rays to nearby bananas and their colours, etc. The agent can take one of four actions:
 - move forward,
 - turn left,
-- turn right, 
+- turn right,
 - move backward,
 
 and needs to learn how to act so as to maximize its score per game episode, where each yellow banana collected nets the agent +1 reward and each blue banana collected nets the agent -1 reward.
@@ -129,6 +129,7 @@ max_iterations: 10000
 
 # model parameters
 model_params:
+  # valid values include 'random', 'dqn', (experimental: 'ddqn', 'dueling-dqn')
   alg: 'dqn'
   # training parameters
   epsilon: 1.0

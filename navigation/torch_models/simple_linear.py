@@ -53,6 +53,17 @@ class LinearModel(nn.Module):
     def forward(self, state):
         """
         Define the forward-pass for data through the model.
+
+        Parameters
+        ----------
+        state: torch.Tensor
+            A 37-length Torch.Tensor containing a state vector to be run through
+            the network.
+
+        Returns
+        -------
+        torch.Tensor
+            Tensor containing output action values determined by the network.
         """
         data_x = torch.relu(self.input(state.float()))
         for layer in self.hidden_layers:

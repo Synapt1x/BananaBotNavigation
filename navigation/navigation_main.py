@@ -106,18 +106,34 @@ class NavigationMain:
     def save_model(self, file_name):
         """
         Save the model to the file name specified.
+
+        Parameters
+        ----------
+        file_name: str
+            File name to which the agent will be saved for future use.
         """
         self.agent.save_model(file_name)
 
     def load_model(self, file_name):
         """
         Load the model specified.
+
+        Parameters
+        ----------
+        file_name: str
+            File name from which the agent will be loaded.
         """
         self.agent.load_model(file_name)
 
     def save_training_plot(self, first_solved):
         """
         Plot training performance through episodes.
+
+        Parameters
+        ----------
+        first_solved: int
+            Episode number at which the agent solved the navigation problem by
+            achieving an average score of +13.
         """
         num_eval = len(self.average_scores)
 
@@ -188,6 +204,12 @@ class NavigationMain:
     def run_episode(self, train_mode=True):
         """
         Run an episode of interaction in the Unity-ML Navigation environment.
+
+        Parameters
+        ----------
+        train_mode: bool
+            Flag to indicate whether or not the agent will be training or just
+            running inference.
         """
         score = 0
         iteration = 0
@@ -227,6 +249,12 @@ class NavigationMain:
     def train_agent(self, train_mode=True):
         """
         Train an agent by running learning episodes in the navigation task.
+
+        Parameters
+        ----------
+        train_mode: bool
+            Flag to indicate whether or not the agent will be training or just
+            running inference.
         """
         episode = 1
         try:

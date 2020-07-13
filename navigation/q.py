@@ -55,12 +55,22 @@ class Q:
     def save_model(self, file_name):
         """
         Save the underlying model.
+
+        Parameters
+        ----------
+        file_name: str
+            File name to which the agent will be saved for future use.
         """
         torch.save(self.q.state_dict(), file_name)
 
     def load_model(self, file_name):
         """
         Load the parameters for the underlying model.
+
+        Parameters
+        ----------
+        file_name: str
+            File name from which the agent will be loaded.
         """
         if self.device.type == 'cpu':
             self.q.load_state_dict(torch.load(file_name,
@@ -71,6 +81,24 @@ class Q:
 
     def get_value(self, state, action=None):
         """
+        Extract a value from the provided state. If an action is provided then
+        extract the values for the specified actions from the Q-function
+        representation, otherwise use a max over actions.
+
+        Parameters
+        ----------
+        state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing state information
+            either in the shape (1, 37) or (batch_size, 37)
+        action: int/torch.Tensor
+            An integer specifying an action to extract value from from
+            Q(s=state, a=action), or a batch of values to extract from
+            Q(s=states, a=actions).
+
+        Returns
+        -------
+        np.array/torch.Tensor
+            Values of the relevant actions for the provided state
         """
         if 'dqn' not in self.alg.lower():
             if action is None:
@@ -84,6 +112,24 @@ class Q:
 
     def get_action(self, state, in_train=True):
         """
+        Extract the action that is maximal for a provided state. If the model is
+        in train mode, then this method also ensures the network is put into
+        train() mode following extracting actions in eval() mode.
+
+        Parameters
+        ----------
+        state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing state information
+            either in the shape (1, 37) or (batch_size, 37)
+        in_train: bool
+            Flag to indicate whether or not the agent will be training or just
+            running inference.
+
+        Returns
+        -------
+        int/torch.Tensor
+            Integer or torch.Tensor batch of integers indicating the actions to
+            be selected based on state provided.
         """
         if 'dqn' not in self.alg.lower():
             return np.argmax(self.q[state])
@@ -113,5 +159,16 @@ class Q:
 
     def update_q_table(self, state, action, new_val):
         """
+        Update Q-function representation if using a Q-table. This is not used by
+        default since the default algorithm is DQN.
+
+        state: np.array/torch.Tensor
+            Array or Tensor singleton or batch containing state information
+            either in the shape (1, 37) or (batch_size, 37)
+        action: int
+            An integer specifying an action to extract value from from
+            Q(s=state, a=action).
+        new_val: float
+            Float value that represents the new value for a Q-table value.
         """
         self.q[state, action] = new_val

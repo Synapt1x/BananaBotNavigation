@@ -9,6 +9,7 @@ max_iterations: 10000
 
 # model parameters
 model_params:
+  # valid values include 'random', 'dqn', (experimental: 'ddqn', 'dueling-dqn')
   alg: 'dqn'
   # training parameters
   epsilon: 1.0
