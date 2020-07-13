@@ -62,9 +62,9 @@ class Q:
         """
         Load the parameters for the underlying model.
         """
-        if self.device == 'cpu':
+        if self.device.type == 'cpu':
             self.q.load_state_dict(torch.load(file_name,
-                                              map_location=self.device))
+                                              map_location=self.device.type))
         else:
             self.q.load_state_dict(torch.load(file_name))
         self.q.eval()

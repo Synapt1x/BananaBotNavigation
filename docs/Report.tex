@@ -109,7 +109,7 @@ Q-network) and iteratively improve it to achieve better performance.
 
 \subsection{DQN}
 
-The DQN algorithm extends the capabilities of Q-learning algorithms by leveraging deep neural networks to approximate the optimal action-value function $q_*(s, a)$. That is, how much expected reward is associated with taking an action $a$ while in state $s$. 
+The DQN algorithm extends the capabilities of Q-learning algorithms by leveraging deep neural networks to approximate the optimal action-value function $q_*(s, a)$ \cite{dqn}. That is, how much expected reward is associated with taking an action $a$ while in state $s$. 
 
 To do this, the input layers of the neural network take in the state-vector represented by the environment, which enables continuous values for each state feature. This is the case in the current navigation problem. Furthermore, the neural network must then also contain a layer of output units that correspond to the different actions available, which is a discrete space of 4 options, thus enabling us to map states to action values. Thus, the agent uses gradient descent to learn from experience tuples to update the network weights $\theta$ such that it can better approximate action values for a provided state vector.
 
@@ -170,7 +170,7 @@ I also needed to experiment hyperparameter tuning for the following hyperparamet
 	\hline
 	\end{tabular}
 	\caption{Hyperparameters experimented with to train an agent using DQN.}
-	\label{tbl:hyperparameters}
+	\label{tbl:parameters}
 \end{table}
 
 \FloatBarrier
@@ -237,28 +237,27 @@ Although performance tends to improve consistently over the 2000 episode trainin
 
 \subsection{Next Steps}
 
-
 There remains room for improvement for the algorithm, although through experimentation with a vanilla DQN I was able to achieve fairly good results. With regard to experimentation and overall improvement of the DQN algorithm at hand, it may make sense to experiment more with the rate at which the target network is updated a bit more. Currently, the target network is not only updated on a static basis of every 100 iterations, but I also use a soft-update that doesn't completely transfer weights from the Q-network to the target network but rather transfers as in Eq. \ref{eq:soft-update}.
 
-Additionally, it may be interesting to determine if the algorithm may be able to improve if the learning rate $\alpha$ was adaptive rather than static, which may enable the algorithm to learn less and less. This could provide a better overall agent in the end, particularly if $\epsilon$ is decayed to a smaller lower bound, since then the agent could learn from exploration sufficiently well and when it has reached a point that it will no longer be learning much from new actions, it has little to gain from taking completely random actions.
+Additionally, it may be interesting to determine if the algorithm may be able to improve if the learning rate $\alpha$ was adaptive rather than static, which may enable the algorithm to learn less and less and more stably learn during exploration \cite{adaptive}. This could provide a better overall agent in the end, particularly if $\epsilon$ is decayed to a smaller lower bound, since then the agent could learn from exploration sufficiently well and when it has reached a point that it will no longer be learning much from new actions, it has little to gain from taking completely random actions.
 
 Some logical next steps beyond optimizing vanilla DQN, however, would include:
 \begin{itemize}
-\item implementing double DQN to assist with any value overestimation that can occur in vanilla DQN,
-\item implementing duelling DQN to provide better separation between favourable actions in states, though this may not provide an extreme improvement other than more rapid learning due to the small action space,
-\item leveraging prioritized experience replay, which changes the way that experience tuples are sampled from the replay buffer to be a weighted sampling based on much loss, and thus how much a tuple affected model weights, rather than a uniform sampling across all stored tuples.
+\item implementing double DQN to assist with any value overestimation that can occur in vanilla DQN \cite{ddqn},
+\item implementing dueling DQN to provide better separation between favourable actions in states \cite{dueling}, though this may not provide an extreme improvement other than more rapid learning due to the small action space,
+\item leveraging prioritized experience replay, which changes the way that experience tuples are sampled from the replay buffer to be a weighted sampling based on much loss, and thus how much a tuple affected model weights, rather than a uniform sampling across all stored tuples \cite{replay}.
 \end{itemize}
 
-Though I experimented with implementing the above, I found that the double DQN was difficult to attain stable learning, often resulting in vanishing gradients, which is something that I would like to investigate further in the future. Both duelling DQN and prioritized experience replay provided far too slow learning to hyperparameter tune efficiently, at least with my available hardware (even on a GTX 1060 Ti), and thus I did not complete these improvements and would like to finalize hyperparameter tuning in the future to uncover any performance gains over vanilla DQN for this task.
+Though I experimented with implementing the above, I found that the double DQN was difficult to attain stable learning, often resulting in vanishing gradients, which is something that I would like to investigate further in the future. Both dueling DQN and prioritized experience replay provided far too slow learning to hyperparameter tune efficiently, at least with my available hardware (even on a GTX 1060 Ti), and thus I did not complete these improvements and would like to finalize hyperparameter tuning in the future to uncover any performance gains over vanilla DQN for this task.
 
-Although as stated above, I suspect duelling DQN would provide a modest but not as stark improvement over vanilla DQN once optimized, I also guess that prioritized experience replay will be very helpful for stabilizing learning and enabling the agent to focus its learning on valuable ($s$, $a$) pairs, which may allow the agent to more quickly decay $\epsilon$ in the $\epsilon$-greedy policy it uses. Prioritized experience replay will particularly be useful given that the agent is learning from a 37-value state vector, which will help narrow the space over which it needs to direct attention to learn from and become more adept at learning how to collect bananas. There will be more careful hyperparameter tuning, however, given that there may be instances where there are little to no bananas nearby the agent, and thus these states may be undersampled since they are less likely to provide immediate reward / value. This could particularly be an important issue for determining the baseline additive value $e$ added to all losses when tuple weights $w_i$ are stored in replay buffers as $w_i = |\delta| + e$ where $\delta$ is the TD-error calculated from a sample. This would also be highly dependent on the value of $\gamma$ as well, since this also affects how much the agent values states where banana rewards are nearer in the future.
+Although as stated above, I suspect dueling DQN would provide a modest but not as stark improvement over vanilla DQN once optimized, I also guess that prioritized experience replay will be very helpful for stabilizing learning and enabling the agent to focus its learning on valuable ($s$, $a$) pairs, which may allow the agent to more quickly decay $\epsilon$ in the $\epsilon$-greedy policy it uses. Prioritized experience replay will particularly be useful given that the agent is learning from a 37-value state vector, which will help narrow the space over which it needs to direct attention to learn from and become more adept at learning how to collect bananas. There will be more careful hyperparameter tuning, however, given that there may be instances where there are little to no bananas nearby the agent, and thus these states may be undersampled since they are less likely to provide immediate reward / value. This could particularly be an important issue for determining the baseline additive value $e$ added to all losses when tuple weights $w_i$ are stored in replay buffers as $w_i = |\delta| + e$ where $\delta$ is the TD-error calculated from a sample. This would also be highly dependent on the value of $\gamma$ as well, since this also affects how much the agent values states where banana rewards are nearer in the future.
 
 \section{Conclusion}
 
-In the work presented herein, I was able to train an agent to learn how to navigate the banana world presented. Using DQN, the agent learned how to maximize its score by picking up as many yellow bananas as possible, while avoiding blue bananas. I had to experiment with some parameters in order to train the DQN to learn the task appropriately, and was able to solve the problem by attaining a 100-episode average score of +13 in 1185 episodes. There remain some further improvement that could be made, such as improving the algorithm itself by introducing ideas from the double or duelling DQN algorithms, or by running more robust and expansive hyperparameter searches.
+In the work presented herein, I was able to train an agent to learn how to navigate the banana world presented. Using DQN, the agent learned how to maximize its score by picking up as many yellow bananas as possible, while avoiding blue bananas. I had to experiment with some parameters in order to train the DQN to learn the task appropriately, and was able to solve the problem by attaining a 100-episode average score of +13 in 1185 episodes. There remain some further improvement that could be made, such as improving the algorithm itself by introducing ideas from the double or dueling DQN algorithms, or by running more robust and expansive hyperparameter searches.
 
 \bibliographystyle{unsrt}
-\bibliography{sample}
+\bibliography{refs}
 % \begin{thebibliography}{9}
 % \bibitem{littman}
 % Leslie~Pack Kaelbling, Michael~L Littman, and Andrew~W Moore.

@@ -1,4 +1,4 @@
-# BananaBotNavigation
+# Deep RL Banana Navigator - DQN in Unity-ML
 Project code for developing an RL agent that navigates in a virtual world collecting bananas. Part of my work for the Deep RL Nanodegree on Udacity.
 
 ## Author
@@ -14,7 +14,20 @@ A full report describing much of my approach, results, and potential improvement
 
 In this project, a Unity environment that contains a world full of spawning yellow and blue bananas is tasked to an agent to navigate. I trained an agent to navigate this environment so as to collect as many yellow bananas as possible, while attempting to avoid collecting as blue bananas.
 
-The agent learns from state information provided by the environment, containing 37 `float` values reprepresenting things such as positon in the space, and rays to nearby bananas and their colours, etc. The agent can move forward, turn left, turn right, or move backward, and needs to learn how to act so as to maximize its score per game episode, where each yellow banana collected nets the agent +1 reward and each blue banana collected nets the agent -1 reward.
+The agent learns from state information provided by the environment, containing 37 `float` values reprepresenting things such as the agents velocity and projeced rays to nearby bananas and their colours, etc. The agent can take one of four actions:
+- move forward,
+- turn left,
+- turn right, 
+- move backward,
+
+and needs to learn how to act so as to maximize its score per game episode, where each yellow banana collected nets the agent +1 reward and each blue banana collected nets the agent -1 reward.
+
+An example visualization of the agent navigating through the banana world after training is shown below:
+
+![trained-agent](https://media.giphy.com/media/ieIwaObn1eHPTt19M9/giphy.gif)
+
+which shows a 15-second clip of the agent navigating through an episode. Interesting to see in this clip is that the agent
+not only aims to grab yellow bananas, but has learned to try to avoid blue bananas when it almost accidentally picks one up.
 
 Prior to learning, if the agent acts completely randomly then the following is an example illustration of how the agent navigates the environment:
 
@@ -65,6 +78,21 @@ output/...
 README.md
 runner.py
 requirements.txt
+```
+Main code in the `navigation` directory is organized as follows:
+```
+navigation/
+    agent.py                 <-- code for controlling the agent and taking states, choosing
+                                 actions, and learning a policy
+    navigation_main.py       <-- code for interfacing the agent and the environment
+                                 and running episodes in the environment
+    q.py                     <-- code that contains a Q-network (or Q-table) that enables
+                                 representing the value function as either a table or NN
+    replay_buffer.py         <-- code implementing the replay buffer used in the DQN algorithm
+    torch_models/
+        simple_linear.py     <-- torch model for DQN using an 8-layer MLP of linear layers
+        dueling_network.py   <-- torch model with a duelling head for experimenting with
+                                 duelling DQN
 ```
 
 ### Running
@@ -147,9 +175,3 @@ was particularly sensitive to these parameters, the model was able to consistent
 to also be some variability in raw episode score throughout training, which is a consequence of the lower bound of 0.05 on
 *epsilon* to enable exploration all throughout training to at least a small degree.
 
-An example visualization of the agent navigating through the banana world is shown below:
-
-![trained-agent](https://media.giphy.com/media/ieIwaObn1eHPTt19M9/giphy.gif)
-
-which shows a 15-second clip of the agent navigating through an episode. Interesting to see in this clip is that the agent
-not only aims to grab yellow bananas, but has learned to try to avoid blue bananas when it almost accidentally picks one up.
